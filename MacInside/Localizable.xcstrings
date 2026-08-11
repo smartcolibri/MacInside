@@ -31,6 +31,16 @@
         }
       }
     },
+    "%lld / %lld processus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld / %2$lld processes"
+          }
+        }
+      }
+    },
     "%lld tr/min": {
       "localizations": {
         "en": {
@@ -147,6 +157,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Appearance"
+          }
+        }
+      }
+    },
+    "Arrêté": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stopped"
           }
         }
       }
@@ -341,6 +361,16 @@
         }
       }
     },
+    "Charge moyenne": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load average"
+          }
+        }
+      }
+    },
     "Clair": {
       "localizations": {
         "en": {
@@ -357,6 +387,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Combined"
+          }
+        }
+      }
+    },
+    "Commande": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Command"
           }
         }
       }
@@ -451,6 +491,16 @@
         }
       }
     },
+    "Durée (min)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duration (min)"
+          }
+        }
+      }
+    },
     "Débit descendant et montant du réseau.": {
       "localizations": {
         "en": {
@@ -501,6 +551,56 @@
         }
       }
     },
+    "Démarré": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Started"
+          }
+        }
+      }
+    },
+    "Désépingler": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unpin"
+          }
+        }
+      }
+    },
+    "Détails": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Details"
+          }
+        }
+      }
+    },
+    "E/S lecture": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I/O read"
+          }
+        }
+      }
+    },
+    "E/S écriture": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I/O write"
+          }
+        }
+      }
+    },
     "En charge": {
       "localizations": {
         "en": {
@@ -511,12 +611,52 @@
         }
       }
     },
+    "En cours": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running"
+          }
+        }
+      }
+    },
+    "En veille": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleeping"
+          }
+        }
+      }
+    },
     "Espace disque, volumes externes et débit d'E/S.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Disk space, external volumes and I/O throughput."
+          }
+        }
+      }
+    },
+    "Fermer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      }
+    },
+    "Filtres": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filters"
           }
         }
       }
@@ -651,6 +791,16 @@
         }
       }
     },
+    "Mettre en pause": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        }
+      }
+    },
     "Modèle": {
       "localizations": {
         "en": {
@@ -667,6 +817,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Memory"
+          }
+        }
+      }
+    },
+    "Mémoire (Mo)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Memory (MB)"
           }
         }
       }
@@ -701,12 +861,32 @@
         }
       }
     },
+    "Mémoire virtuelle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Virtual memory"
+          }
+        }
+      }
+    },
     "Niveau, autonomie, santé et température de la batterie.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Battery level, time remaining, health and temperature."
+          }
+        }
+      }
+    },
+    "Nom": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
           }
         }
       }
@@ -737,6 +917,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Open Dashboard"
+          }
+        }
+      }
+    },
+    "PID parent": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parent PID"
           }
         }
       }
@@ -801,6 +991,46 @@
         }
       }
     },
+    "Processus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Processes"
+          }
+        }
+      }
+    },
+    "Processus enfants": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Child processes"
+          }
+        }
+      }
+    },
+    "Processus parent": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parent process"
+          }
+        }
+      }
+    },
+    "Processus terminé": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Process terminated"
+          }
+        }
+      }
+    },
     "Puce": {
       "localizations": {
         "en": {
@@ -841,12 +1071,32 @@
         }
       }
     },
+    "Rechercher : nom, commande ou PID (virgules = OU, regex acceptées)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search: name, command or PID (commas = OR, regex supported)"
+          }
+        }
+      }
+    },
     "Rechercher les mises à jour…": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Check for Updates…"
+          }
+        }
+      }
+    },
+    "Reprendre": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume"
           }
         }
       }
@@ -911,6 +1161,16 @@
         }
       }
     },
+    "Statut": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        }
+      }
+    },
     "Stockage": {
       "localizations": {
         "en": {
@@ -937,6 +1197,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "System"
+          }
+        }
+      }
+    },
+    "Temps d'exécution": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run time"
           }
         }
       }
@@ -997,6 +1267,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Total since launch"
+          }
+        }
+      }
+    },
+    "Tout effacer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear all"
           }
         }
       }
@@ -1071,6 +1351,16 @@
         }
       }
     },
+    "Variables d'environnement": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Environment variables"
+          }
+        }
+      }
+    },
     "Ventilateur %lld": {
       "localizations": {
         "en": {
@@ -1121,6 +1411,16 @@
         }
       }
     },
+    "Zombie": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zombie"
+          }
+        }
+      }
+    },
     "À propos": {
       "localizations": {
         "en": {
@@ -1147,6 +1447,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Serious"
+          }
+        }
+      }
+    },
+    "Épingler": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pin"
           }
         }
       }

@@ -71,6 +71,9 @@ final class AppSettings {
     var highBatteryAlertThreshold: Int {
         didSet { UserDefaults.standard.set(highBatteryAlertThreshold, forKey: "highBatteryAlertThreshold") }
     }
+    var pinnedProcessCommandsRaw: String {
+        didSet { UserDefaults.standard.set(pinnedProcessCommandsRaw, forKey: "pinnedProcessCommands") }
+    }
 
     init() {
         let defaults = UserDefaults.standard
@@ -87,6 +90,8 @@ final class AppSettings {
         showGPUMenuExtra = defaults.object(forKey: "showGPUMenuExtra") as? Bool ?? false
         dashboardCardOrderRaw = defaults.string(forKey: "dashboardCardOrder") ?? ""
         hiddenDashboardCardsRaw = defaults.string(forKey: "hiddenDashboardCards") ?? ""
+
+        pinnedProcessCommandsRaw = defaults.string(forKey: "pinnedProcessCommands") ?? ""
 
         lowBatteryAlertEnabled = defaults.object(forKey: "lowBatteryAlertEnabled") as? Bool ?? true
         lowBatteryAlertThreshold = defaults.object(forKey: "lowBatteryAlertThreshold") as? Int ?? 20
@@ -119,6 +124,16 @@ final class AppSettings {
     var hiddenDashboardCards: Set<DashboardCardKind> {
         get { Set(hiddenDashboardCardsRaw.split(separator: ",").compactMap { DashboardCardKind(rawValue: String($0)) }) }
         set { hiddenDashboardCardsRaw = newValue.map(\.rawValue).joined(separator: ",") }
+    }
+
+    /// Processus épinglés dans la fenêtre Processus, par ligne de commande
+    /// (cf. `ProcessEntry.pinKey`) et persistés — deux améliorations par
+    /// rapport à NeoHtop, qui épingle par commande mais perd tout à la
+    /// fermeture. Séparateur `\n` : une commande peut contenir des virgules,
+    /// jamais de retour à la ligne (aplati à la collecte).
+    var pinnedProcessCommands: Set<String> {
+        get { Set(pinnedProcessCommandsRaw.split(separator: "\n").map(String.init)) }
+        set { pinnedProcessCommandsRaw = newValue.sorted().joined(separator: "\n") }
     }
 
     /// Démarrage automatique à l'ouverture de session, via `SMAppService`
