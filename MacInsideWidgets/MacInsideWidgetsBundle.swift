@@ -11,5 +11,11 @@ struct MacInsideWidgetsBundle: WidgetBundle {
         MemoryWidget()
         BatteryWidget()
         SensorsWidget()
+        StorageWidget()
+        NetworkIdentityWidget()
+        NetworkUsageWidget()
+        FansWidget()
+        PowerWidget()
+        AccessoriesWidget()
     }
 }

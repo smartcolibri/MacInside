@@ -15,7 +15,7 @@ final class WidgetSnapshotTests: XCTestCase {
     }
 
     func testRoundTripPreservesValues() throws {
-        let original = WidgetSnapshot(
+        var original = WidgetSnapshot(
             capturedAt: Date(timeIntervalSince1970: 1_800_000_000),
             cpu: .init(totalPercent: 42.5, userPercent: 30, systemPercent: 12.5,
                        history: [1, 2, 3], topProcessName: "Xcode", topProcessPercent: 88.25),
@@ -27,8 +27,56 @@ final class WidgetSnapshotTests: XCTestCase {
             sensors: .init(available: true, hasFans: true, maxCelsius: 48.2, maxLabel: "CPU",
                            readings: [.init(label: "CPU", celsius: 48.2)], fanRPMs: [1200, 1300])
         )
+        original.storage = .init(
+            systemVolume: .init(name: "Macintosh HD", usedBytes: 412_000_000_000,
+                                totalBytes: 1_000_000_000_000),
+            externalVolumes: [.init(name: "Backup", usedBytes: 100, totalBytes: 200)],
+            readBytesPerSec: 18_400_000, writeBytesPerSec: 6_200_000,
+            readHistory: [1, 2], writeHistory: [3, 4])
+        original.networkIdentity = .init(
+            hostname: "macbook-pro", interfaceType: "Wi-Fi", interfaceName: "en0",
+            localAddress: "192.168.1.24", publicAddress: "82.64.113.7",
+            countryCode: "FR", gatewayAddress: "192.168.1.1")
+        original.networkUsage = .init(
+            downloadBytesPerSec: 2_400_000, uploadBytesPerSec: 340_000,
+            downloadHistory: [5, 6], uploadHistory: [7, 8],
+            totalDownloadBytes: 4_800_000_000, totalUploadBytes: 620_000_000)
+        original.fans = .init(available: true, hasFans: true,
+                              readings: [.init(label: "Ventilateur 1", rpm: 1840, percent: 31)])
+        original.power = .init(available: true,
+                               readings: [.init(label: "DC In", value: 44.6, unit: "W")])
+        original.accessories = .init(
+            readings: [.init(name: "AirPods Pro", partLabel: "Gauche", percent: 84)])
 
         XCTAssertEqual(try roundTrip(original), original)
+    }
+
+    /// Un instantané écrit par une version de l'app antérieure aux nouveaux
+    /// widgets ne porte pas leurs sections : il doit rester décodable, avec
+    /// les sections à `nil` — pas une erreur qui rendrait tous les widgets
+    /// muets pendant la mise à jour.
+    func testLegacySnapshotWithoutNewSectionsDecodes() throws {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        var object = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: encoder.encode(WidgetSnapshot.placeholderForTests))
+                as? [String: Any])
+        for key in ["storage", "networkIdentity", "networkUsage", "fans", "power", "accessories"] {
+            object.removeValue(forKey: key)
+        }
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let snapshot = try decoder.decode(WidgetSnapshot.self,
+                                          from: JSONSerialization.data(withJSONObject: object))
+
+        XCTAssertNil(snapshot.storage)
+        XCTAssertNil(snapshot.networkIdentity)
+        XCTAssertNil(snapshot.networkUsage)
+        XCTAssertNil(snapshot.fans)
+        XCTAssertNil(snapshot.power)
+        XCTAssertNil(snapshot.accessories)
+        XCTAssertEqual(snapshot.cpu, WidgetSnapshot.placeholderForTests.cpu)
     }
 
     /// Un Mac de bureau n'a pas de batterie : `nil` doit rester `nil` et ne pas
