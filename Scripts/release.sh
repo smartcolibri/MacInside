@@ -41,6 +41,19 @@ fi
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+# xcodebuild exige un vrai Xcode ; sur ce Mac, xcode-select peut pointer sur
+# les seuls Command Line Tools (et Xcode s'appeler Xcode-beta.app). Résoudre
+# un Xcode complet si DEVELOPER_DIR n'est pas déjà fourni.
+if [ -z "${DEVELOPER_DIR:-}" ] && ! xcode-select -p 2>/dev/null | grep -q '\.app/Contents/Developer'; then
+  for xc in /Applications/Xcode.app /Applications/Xcode-beta.app; do
+    if [ -d "$xc/Contents/Developer" ]; then
+      export DEVELOPER_DIR="$xc/Contents/Developer"
+      echo "▶︎ DEVELOPER_DIR=$DEVELOPER_DIR (xcode-select pointe sur les CLT)"
+      break
+    fi
+  done
+fi
+
 # ── Project identity (bootstrap.sh rewrites these when you clone the template) ──
 APP_NAME="${APP_NAME:-MacInside}"      # PRODUCT_NAME / .app bundle name
 SCHEME="${SCHEME:-MacInside}"           # macOS scheme (see project.yml)

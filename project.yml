@@ -20,7 +20,7 @@ settings:
     # plutôt que dans chaque target, sinon un bump manuel de l'app seule les
     # désynchronise. (`release.sh` les surcharge de toute façon en ligne de
     # commande, ce qui s'applique à tous les targets.)
-    MARKETING_VERSION: "1.1.0"
+    MARKETING_VERSION: "1.2.0"
     CURRENT_PROJECT_VERSION: "1"
 
 schemes:

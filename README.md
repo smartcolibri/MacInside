@@ -29,7 +29,7 @@ It talks directly to `host_statistics`, IOKit's `AppleSMC`, `IOAccelerator` and 
 
 | | |
 | --- | --- |
-| 🖥️ **Machine identity** | Model, chip, OS version, serial number, uptime, thermal state |
+| 🖥️ **Machine identity** | Model, chip, OS version, serial number, uptime, load average, thermal state |
 | ⚡ **CPU** | System/user load, performance vs. efficiency core bars, top processes |
 | 🧠 **Memory** | Wired/active/compressed/available ring, top processes by memory |
 | 💾 **Storage** | System volume + external volumes, used/available |
@@ -38,7 +38,9 @@ It talks directly to `host_statistics`, IOKit's `AppleSMC`, `IOAccelerator` and 
 | 🔌 **Power** | Voltage/current/wattage readings (DC In, system, battery) where available |
 | 🎮 **GPU** | Device/renderer/tiler utilization, memory in use, via `IOAccelerator` |
 | 🔋 **Battery** | Charge %, time remaining, health, cycle count — hidden automatically on desktop Macs |
-| 🧩 **Drag-to-reorder dashboard** | Reorder cards by dragging them; the layout persists across launches |
+| 🗂️ **Process manager** | Full sortable process table — regex/multi-term search, numeric & status filters, persistent pinning, per-process disk I/O, detail inspector with parent/child navigation, plus Terminate / Force Quit / Lower priority (possible because MacInside is not sandboxed) |
+| 🧿 **Widgets** | Ten native macOS widgets (Notification Center + desktop) mirroring every dashboard card, with visible data age |
+| 🧩 **Drag-to-reorder dashboard** | Reorder cards by dragging them; the layout persists across launches — plus a pause button to freeze all readings |
 | 📊 **Menu bar, two modes** | One combined dropdown, or a separate icon per metric (CPU/Memory/Network/Disk/Battery/GPU), each with its own detailed dropdown |
 | 🌍 **Localized FR/EN** | Follows the system language automatically |
 | 🚀 **Auto-update** | Sparkle 2 + notarized DMGs + EdDSA signature — *Check for Updates…* prompts before downloading, never installs silently |
@@ -83,9 +85,12 @@ MacInside/
 ├── Models/Metrics.swift      # data structs (CPUStats, MemoryStats, ...)
 ├── Providers/                # low-level system access (host_statistics, IOKit, SMC, libproc...)
 ├── Settings/AppSettings.swift
-├── Views/                    # DashboardView + cards (CPU, Memory, Network, Sensors...)
+├── Views/                    # DashboardView, ProcessWindowView + cards (CPU, Memory, Network...)
 ├── Views/Components/         # gauge ring, sparklines, reusable card
+├── Shared/                   # WidgetSnapshot + store (app ↔ widget extension contract)
 └── MenuBar/                  # menu bar icon + dropdown content
+MacInsideWidgets/             # WidgetKit extension (sandboxed) — 10 widgets
+MacInsideTests/               # unit tests (formatters, deltas, snapshot, process filter)
 Scripts/                      # release.sh, make-app-icon.swift, make-dmg-background.swift
 project.yml                   # XcodeGen config
 appcast.xml                   # Sparkle update feed

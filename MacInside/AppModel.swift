@@ -15,6 +15,24 @@ final class AppModel {
     private(set) var battery = BatteryStats()
     private(set) var gpu = GPUStats()
     private(set) var accessoryBatteries = AccessoryBatteryStats()
+    private(set) var processList = ProcessListStats()
+
+    /// Rafraîchissement gelé (bouton pause) : la boucle continue de tourner
+    /// mais ne relit plus rien — toutes les valeurs affichées restent figées.
+    var isFrozen = false
+
+    /// Vrai tant que la fenêtre Processus est ouverte. La collecte complète
+    /// (3 appels noyau par process) ne tourne que si quelqu'un la regarde ;
+    /// le dashboard, lui, se contente toujours du top 6.
+    var isProcessListActive = false {
+        didSet {
+            guard isProcessListActive, !oldValue else { return }
+            // Premier snapshot immédiat pour ne pas ouvrir une fenêtre vide ;
+            // les % CPU demandent deux échantillons et se remplissent au tick
+            // suivant.
+            processList = processListMonitor.snapshot()
+        }
+    }
 
     private let identityProvider = SystemIdentityProvider()
     private let cpuMonitor = CPUMonitor()
@@ -27,6 +45,7 @@ final class AppModel {
     private let gpuMonitor = GPUMonitor()
     private let accessoryBatteryMonitor = AccessoryBatteryMonitor()
     private let processMonitor = ProcessMonitor()
+    private let processListMonitor = ProcessListMonitor()
     private let publicAddressLookup = PublicAddressLookup()
     private let widgetPublisher = WidgetSnapshotPublisher()
 
@@ -41,7 +60,7 @@ final class AppModel {
         guard refreshTask == nil else { return }
         refreshTask = Task { [weak self] in
             while let self, !Task.isCancelled {
-                self.refresh()
+                if !self.isFrozen { self.refresh() }
                 let interval = self.settings.refreshInterval
                 try? await Task.sleep(for: .seconds(interval))
             }
@@ -55,6 +74,12 @@ final class AppModel {
 
     func requestBatteryAlertAuthorization() {
         batteryAlertMonitor.requestAuthorizationIfNeeded()
+    }
+
+    /// Variables d'environnement d'un process, lues à la demande (fiche
+    /// détail de la fenêtre Processus).
+    func processEnvironment(pid: Int32) -> [String] {
+        processListMonitor.environment(pid: pid)
     }
 
     private func refresh() {
@@ -75,6 +100,9 @@ final class AppModel {
         batteryAlertMonitor.evaluate(battery: battery, settings: settings)
         gpu = gpuMonitor.snapshot()
         accessoryBatteries = accessoryBatteryMonitor.snapshot()
+        if isProcessListActive {
+            processList = processListMonitor.snapshot()
+        }
 
         // Après l'affectation de tous les snapshots : les widgets lisent un
         // instantané cohérent, jamais un mélange de deux tours de boucle.

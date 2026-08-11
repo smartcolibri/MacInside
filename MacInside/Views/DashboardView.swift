@@ -13,6 +13,7 @@ import UniformTypeIdentifiers
 struct DashboardView: View {
     @Environment(AppModel.self) private var model
     @Environment(AppSettings.self) private var settings
+    @Environment(\.openWindow) private var openWindow
 
     private let minColumnWidth: CGFloat = 260
     private let spacing: CGFloat = 16
@@ -31,6 +32,25 @@ struct DashboardView: View {
             }
         }
         .background(Color(nsColor: .windowBackgroundColor))
+        .toolbar {
+            ToolbarItem {
+                Button {
+                    model.isFrozen.toggle()
+                } label: {
+                    Label(model.isFrozen ? "Reprendre" : "Mettre en pause",
+                          systemImage: model.isFrozen ? "play.fill" : "pause.fill")
+                }
+                .help(model.isFrozen ? Text("Reprendre") : Text("Mettre en pause"))
+            }
+            ToolbarItem {
+                Button {
+                    openWindow(id: "processes")
+                } label: {
+                    Label("Processus", systemImage: "list.bullet.rectangle")
+                }
+                .help(Text("Processus"))
+            }
+        }
     }
 
     private var orderedKinds: [DashboardCardKind] {

@@ -14,6 +14,8 @@ struct SystemIdentity: Equatable {
     var serialNumber: String = ""
     var uptime: TimeInterval = 0
     var thermalState: ProcessInfo.ThermalState = .nominal
+    /// Load average 1 / 5 / 15 min (`getloadavg`), vide si indisponible.
+    var loadAverage: [Double] = []
 
     var coreCount: Int { performanceCoreCount + efficiencyCoreCount }
 }

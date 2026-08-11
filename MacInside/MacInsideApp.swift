@@ -44,6 +44,18 @@ struct MacInsideApp: App {
             }
         }
 
+        // Fenêtre Processus (Phase 5) : `Window` plutôt que `WindowGroup`, une
+        // seule instance suffit — la collecte complète est active tant qu'elle
+        // est ouverte (cf. `AppModel.isProcessListActive`).
+        Window("Processus", id: "processes") {
+            ProcessWindowView()
+                .environment(settings)
+                .environment(model)
+                .preferredColorScheme(settings.appearance.colorScheme)
+                .onAppear { model.start() }
+        }
+        .defaultSize(width: 1040, height: 640)
+
         // `SceneBuilder` ne supporte pas les `if`/`if-else` imbriqués comme
         // `ViewBuilder` (limites de buildEither/buildOptional côté Scene) —
         // chaque MenuBarExtra est donc toujours déclaré, son affichage étant

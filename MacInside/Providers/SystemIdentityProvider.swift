@@ -14,7 +14,13 @@ final class SystemIdentityProvider {
         cachedStatic = identity
         identity.uptime = Self.uptime()
         identity.thermalState = ProcessInfo.processInfo.thermalState
+        identity.loadAverage = Self.loadAverage()
         return identity
+    }
+
+    private static func loadAverage() -> [Double] {
+        var loads = [Double](repeating: 0, count: 3)
+        return getloadavg(&loads, 3) == 3 ? loads : []
     }
 
     private static func loadStatic() -> SystemIdentity {

@@ -56,6 +56,9 @@ struct HeaderView: View {
                     infoRow("Modèle", identity.modelName.isEmpty ? "—" : identity.modelName)
                     infoRow("Numéro de série", identity.serialNumber.isEmpty ? "—" : identity.serialNumber)
                     infoRow("Uptime", Formatters.uptime(identity.uptime))
+                    infoRow("Charge moyenne", identity.loadAverage.isEmpty
+                        ? "—"
+                        : identity.loadAverage.map { String(format: "%.2f", $0) }.joined(separator: "  "))
                     HStack(spacing: 6) {
                         Text("État thermique")
                             .font(.caption)
