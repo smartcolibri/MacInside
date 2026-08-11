@@ -241,6 +241,16 @@
         }
       }
     },
+    "Batterie des accessoires Bluetooth connectés.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battery levels of connected Bluetooth accessories."
+          }
+        }
+      }
+    },
     "Batterie faible": {
       "localizations": {
         "en": {
@@ -441,6 +451,26 @@
         }
       }
     },
+    "Débit descendant et montant du réseau.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network download and upload throughput."
+          }
+        }
+      }
+    },
+    "Débit disque": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disk throughput"
+          }
+        }
+      }
+    },
     "Débit réseau": {
       "localizations": {
         "en": {
@@ -477,6 +507,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Charging"
+          }
+        }
+      }
+    },
+    "Espace disque, volumes externes et débit d'E/S.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disk space, external volumes and I/O throughput."
           }
         }
       }
@@ -551,6 +591,16 @@
         }
       }
     },
+    "Interface, adresses IP et passerelle.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interface, IP addresses and gateway."
+          }
+        }
+      }
+    },
     "Intervalle": {
       "localizations": {
         "en": {
@@ -567,6 +617,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Open MacInside"
+          }
+        }
+      }
+    },
+    "Lecture": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read"
           }
         }
       }
@@ -901,6 +961,16 @@
         }
       }
     },
+    "Tension, courant et puissance.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voltage, current and power."
+          }
+        }
+      }
+    },
     "Terminer": {
       "localizations": {
         "en": {
@@ -1021,6 +1091,16 @@
         }
       }
     },
+    "Vitesse des ventilateurs.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fan speeds."
+          }
+        }
+      }
+    },
     "Volume système indisponible": {
       "localizations": {
         "en": {
@@ -1047,6 +1127,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "About"
+          }
+        }
+      }
+    },
+    "Écriture": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write"
           }
         }
       }

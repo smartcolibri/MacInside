@@ -80,6 +80,37 @@ struct WidgetSparkline: View {
     }
 }
 
+/// Ligne libellé/valeur compacte, commune aux widgets à contenu tabulaire.
+struct WidgetRow: View {
+    private let label: Text
+    private let value: String
+
+    init(_ label: LocalizedStringKey, _ value: String) {
+        self.label = Text(label)
+        self.value = value
+    }
+
+    /// Libellé arrivé déjà localisé dans l'instantané (capteur, accessoire…).
+    init(raw label: String, _ value: String) {
+        self.label = Text(label)
+        self.value = value
+    }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            label
+                .font(.system(size: 10))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            Spacer(minLength: 2)
+            Text(value)
+                .font(.caption2.monospacedDigit())
+                .lineLimit(1)
+                .truncationMode(.middle)
+        }
+    }
+}
+
 /// Âge de la donnée. Affiché sur tous les widgets à dessein : les données
 /// WidgetKit ont plusieurs minutes de retard par construction (l'extension est
 /// sandboxée et ne peut pas lire les capteurs elle-même), autant que ce soit
