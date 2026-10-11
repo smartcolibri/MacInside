@@ -1,5 +1,0 @@
-// Optional local signing overrides. Copy this file to Local.xcconfig at the
-// repo root (it is git-ignored), uncomment and set your team, then run
-// `xcodegen generate`. Find your team ID in Xcode > Settings > Accounts.
-
-// DEVELOPMENT_TEAM = YOURTEAMID
