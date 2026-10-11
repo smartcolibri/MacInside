@@ -1,7 +1,33 @@
 import SwiftUI
 import Sparkle
 
+/// Point d'entrée : sous XCTest, l'app n'est qu'un hôte pour le bundle de
+/// tests. Lancer `MacInsideApp` y démarrerait toute l'app (Sparkle,
+/// MenuBarExtra, boucle de collecte d'`AppModel`, publication des widgets).
+/// Or cette boucle tourne sur le main actor et `NetworkMonitor` y attend
+/// `/sbin/route` via `Process.waitUntilExit()`, qui fait tourner une run loop
+/// imbriquée : XCTest y démarre ses tests, puis attend pour conclure la file
+/// principale, bloquée par le job en cours — l'hôte ne se termine jamais et
+/// `xcodebuild test` échoue alors que tous les tests passent.
+/// Une `NSApplication` nue suffit : XCTest injecte et pilote les tests via la
+/// run loop, puis termine le process.
 @main
+enum MacInsideMain {
+    @MainActor
+    static func main() {
+        let environment = ProcessInfo.processInfo.environment
+        // Présence des clés, pas leur valeur : sous Xcode 27,
+        // `XCTestConfigurationFilePath` est défini mais vide.
+        let isTestHost = environment["XCTestConfigurationFilePath"] != nil
+            || environment["XCTestSessionIdentifier"] != nil
+        if isTestHost {
+            NSApplication.shared.run()
+        } else {
+            MacInsideApp.main()
+        }
+    }
+}
+
 struct MacInsideApp: App {
     @State private var settings = AppSettings()
     @State private var model: AppModel
