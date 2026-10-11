@@ -20,7 +20,7 @@ settings:
     # plutôt que dans chaque target, sinon un bump manuel de l'app seule les
     # désynchronise. (`release.sh` les surcharge de toute façon en ligne de
     # commande, ce qui s'applique à tous les targets.)
-    MARKETING_VERSION: "1.2.0"
+    MARKETING_VERSION: "1.2.1"
     CURRENT_PROJECT_VERSION: "1"
 
 schemes:
@@ -72,7 +72,7 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         CFBundleDevelopmentRegion: fr
         CFBundleLocalizations: [fr, en]
-        SUFeedURL: "https://raw.githubusercontent.com/vincentlauriat/MacInside/main/appcast.xml"
+        SUFeedURL: "https://raw.githubusercontent.com/smartcolibri/MacInside/main/appcast.xml"
         SUPublicEDKey: "tFXsHOjAq+eXyeVuav0ojm3XQ8SgLVV1HrXvKLJ2U4I="
         SUEnableAutomaticChecks: true
         SUScheduledCheckInterval: 86400
