@@ -220,7 +220,7 @@ cat > "$ROOT/appcast.xml" <<APPCAST
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
   <channel>
     <title>$APP_NAME</title>
-    <link>https://raw.githubusercontent.com/smartcolibri/$APP_NAME/main/appcast.xml</link>
+    <link>https://raw.githubusercontent.com/vincentlauriat/$APP_NAME/main/appcast.xml</link>
     <description>$APP_NAME release feed</description>
     <language>en</language>
     <item>
@@ -229,9 +229,9 @@ cat > "$ROOT/appcast.xml" <<APPCAST
       <sparkle:version>$APP_BUILD_NUMBER</sparkle:version>
       <sparkle:shortVersionString>$VERSION</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-      <sparkle:releaseNotesLink>https://github.com/smartcolibri/$APP_NAME/releases/tag/v$VERSION</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://github.com/vincentlauriat/$APP_NAME/releases/tag/v$VERSION</sparkle:releaseNotesLink>
       <enclosure
-        url="https://github.com/smartcolibri/$APP_NAME/releases/download/v$VERSION/$DMG_SLUG-$VERSION.dmg"
+        url="https://github.com/vincentlauriat/$APP_NAME/releases/download/v$VERSION/$DMG_SLUG-$VERSION.dmg"
         type="application/octet-stream"
         $SPARKLE_SIG_LINE />
     </item>

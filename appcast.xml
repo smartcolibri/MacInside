@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
   <channel>
     <title>MacInside</title>
-    <link>https://raw.githubusercontent.com/smartcolibri/MacInside/main/appcast.xml</link>
+    <link>https://raw.githubusercontent.com/vincentlauriat/MacInside/main/appcast.xml</link>
     <description>MacInside release feed</description>
     <language>en</language>
     <item>
@@ -11,9 +11,9 @@
       <sparkle:version>49</sparkle:version>
       <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-      <sparkle:releaseNotesLink>https://github.com/smartcolibri/MacInside/releases/tag/v1.2.0</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://github.com/vincentlauriat/MacInside/releases/tag/v1.2.0</sparkle:releaseNotesLink>
       <enclosure
-        url="https://github.com/smartcolibri/MacInside/releases/download/v1.2.0/MacInside-1.2.0.dmg"
+        url="https://github.com/vincentlauriat/MacInside/releases/download/v1.2.0/MacInside-1.2.0.dmg"
         type="application/octet-stream"
         sparkle:edSignature="DmHquPfK6WquGusf+zPpAcGBIEdMXzGwW9UYVlkOHOP65lSvGTLEAN+F0POXruZdIzSn4Rf9GPn4NQ6800ZoCQ==" length="2807154" />
     </item>

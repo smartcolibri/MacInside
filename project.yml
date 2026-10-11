@@ -11,22 +11,16 @@ packages:
     url: https://github.com/sparkle-project/Sparkle
     from: "2.9.1"
 
-# Signature (DEVELOPMENT_TEAM) au niveau projet, hérité par tous les targets.
-configFiles:
-  Debug: Config/Signing.xcconfig
-  Release: Config/Signing.xcconfig
-
 settings:
   base:
-    # DEVELOPMENT_TEAM vit dans Config/Signing.xcconfig (surchargeable par un
-    # Local.xcconfig optionnel, ignoré par git) — jamais ici, sinon il gagne.
+    DEVELOPMENT_TEAM: "KFLACS69T9"
     ENABLE_HARDENED_RUNTIME: YES
     # Version partagée par l'app et l'extension widget : macOS attend qu'une
     # extension embarquée porte la même version que son app hôte. Définie ici
     # plutôt que dans chaque target, sinon un bump manuel de l'app seule les
     # désynchronise. (`release.sh` les surcharge de toute façon en ligne de
     # commande, ce qui s'applique à tous les targets.)
-    MARKETING_VERSION: "1.2.1"
+    MARKETING_VERSION: "1.2.0"
     CURRENT_PROJECT_VERSION: "1"
 
 schemes:
@@ -78,7 +72,7 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         CFBundleDevelopmentRegion: fr
         CFBundleLocalizations: [fr, en]
-        SUFeedURL: "https://raw.githubusercontent.com/smartcolibri/MacInside/main/appcast.xml"
+        SUFeedURL: "https://raw.githubusercontent.com/vincentlauriat/MacInside/main/appcast.xml"
         SUPublicEDKey: "tFXsHOjAq+eXyeVuav0ojm3XQ8SgLVV1HrXvKLJ2U4I="
         SUEnableAutomaticChecks: true
         SUScheduledCheckInterval: 86400
