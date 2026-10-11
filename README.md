@@ -96,6 +96,10 @@ project.yml                   # XcodeGen config
 appcast.xml                   # Sparkle update feed
 ```
 
+## Contributing
+
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the build, workflow, DCO sign-off and localization rules, [SECURITY.md](SECURITY.md) to report a vulnerability privately, and [CHANGELOG.md](CHANGELOG.md) for release history.
+
 ## License
 
 MIT — see [`LICENSE`](LICENSE).
