@@ -4,11 +4,12 @@ Status: **proposal** (2026-10-11, adapted from the Cockpit for Claude version of
 
 Context: MacInside is a free, **open-source (MIT)** native macOS system dashboard (window + menu bar + 10 widgets), distributed as a notarized Developer ID DMG with Sparkle auto-update. It is **not sandboxed** (SMC sensors, process enumeration and kill/renice need it), so the Mac App Store is out of scope and Developer ID stays the only distribution channel. The product plan lives in `PLAN.md`; this document covers *how the work is organised*, not *what* is built.
 
-## 1. Current state (checked 2026-10-11)
+## 1. Current state (checked 2026-10-11, after the transfer to `smartcolibri`)
 
 | Area | Today |
 |---|---|
-| Code | `vincentlauriat/MacInside`, **public**, personal account (not an organization), MIT license. One collaborator: Vincent |
+| Code | `smartcolibri/MacInside` (transferred from `vincentlauriat/MacInside`; the old URLs redirect), **public**, MIT license. One collaborator: Vincent |
+| Plan | Organization `smartcolibri` on GitHub **Team** → rulesets, required reviews, CODEOWNERS and org-level Projects are available. Org defaults already set: 2FA required, members can create public repos, default permission `read` |
 | Workflow | **0 PRs** on GitHub: feature branches are merged locally with `git merge --no-ff` and `main` is pushed directly. Merge commits, squash and rebase merges all allowed; merged branches are **not** auto-deleted |
 | `main` | **Not protected**, no ruleset |
 | Task tracking | `TODOS.md` + `PLAN.md` (git-ignored). **0 issues**, default labels only, no milestones, no Projects board |
@@ -16,17 +17,18 @@ Context: MacInside is a free, **open-source (MIT)** native macOS system dashboar
 | Conventions | Repo `CLAUDE.md` is **git-ignored** (as is `.claude/`): a collaborator or their agent gets no conventions from the repo. No `CONTRIBUTING.md`, no `AGENTS.md` |
 | Tests / build | 23 unit tests in `MacInsideTests` (formatters, safe deltas, widget snapshot, process filter), run with `xcodebuild test` on Vincent's Mac only — the host app does not terminate after the run, so the final verdict reads `TEST FAILED` even when every case passes. No `.github/` folder, no CI |
 | Releases | `Scripts/release.sh <version>` run locally: Developer ID signing, notarization, DMG, staple, Sparkle EdDSA signature, `appcast.xml`. GitHub Releases `v1.0.0`, `v1.1.0`, `v1.2.0` (latest, 2026-08-11) |
-| Landing page | GitHub Pages from `docs/` on `main` (https://vincentlauriat.github.io/MacInside/). Copies: a card on `vincentlauriat.github.io` (separate repo, manual PR) and a reference on `lauriat.fr` (separate repo, deployed with `UploadSite.sh`) |
+| Landing page | GitHub Pages from `docs/` on `main`, now at https://smartcolibri.github.io/MacInside/ — the old `vincentlauriat.github.io/MacInside/` returns **404** since the transfer. Copies: a card on `vincentlauriat.github.io` (separate repo, manual PR) and a reference on `lauriat.fr` (separate repo, deployed with `UploadSite.sh`); both still need to point to the new URL |
 | Apple | **Individual** Apple Developer account, team `KFLACS69T9`, shared with Vincent's other Mac apps. "Developer ID Application: Vincent LAURIAT" certificate in Vincent's keychain |
+| Sparkle feed | `SUFeedURL` in shipped builds = `raw.githubusercontent.com/vincentlauriat/MacInside/main/appcast.xml`, served today through GitHub's transfer redirect (HTTP 200) |
 | Secrets | All on Vincent's Mac: Sparkle EdDSA private key (login keychain, account `MacInside`, dedicated to this app — must never be regenerated), notarytool profile `AppliMacVincentGithub`, signing certificate |
 
 ## 2. Decisions needed first
 
 ### 2.1 Protecting `main` — sized for one person
 
-Branch protection and rulesets are available on a public repository, even on a personal account. The trap is the same as on any solo project: **a rule requiring one approving review blocks a solo developer**, since GitHub does not let you approve your own PR. It also ends today's habit of merging locally and pushing `main`.
+Rulesets and branch protection are available (public repo, Team plan). The trap is the same as on any solo project: **a rule requiring one approving review blocks a solo developer**, since GitHub does not let you approve your own PR. It also ends today's habit of merging locally and pushing `main`.
 
-- **Recommended now**: ruleset on `main` — PR required, linear history, green CI required, **0 required approvals**, no force push, no deletion; the repository admin may bypass in an emergency.
+- **Recommended now**: ruleset on `main` — PR required, linear history, green CI required, **0 required approvals**, no force push, no deletion; organization admins may bypass in an emergency.
 - **When a second maintainer joins**: raise to 1 approval + CODEOWNERS review.
 
 ### 2.2 Who the collaborators are (open-source contributors, agents, or both)
@@ -35,7 +37,7 @@ Branch protection and rulesets are available on a public repository, even on a p
 - **Humans**: since the repo is public and MIT-licensed, anyone can fork and open a PR. This drives three follow-up questions:
   - **Contribution terms** — MIT means inbound = outbound by default; decide whether that is enough or whether a DCO sign-off (`Signed-off-by`) is required. A CLA is heavier and probably not worth it for a free tool.
   - **Apple access** — contributors build unsigned (`CODE_SIGNING_ALLOWED=NO`) or with their own team; only Vincent signs and notarizes releases. Nobody else needs the Apple account as long as releases stay on Vincent's Mac.
-  - **Owner** — keep the repo on the personal account, or move it to an organization (e.g. `smartcolibri`) if MacInside becomes a company product. Moving changes the Pages URL and the Sparkle feed URL (`SUFeedURL` = `raw.githubusercontent.com/vincentlauriat/MacInside/main/appcast.xml`). GitHub redirects a transferred repo, but the redirect breaks if a repo with the old name is ever created again, so ship a release that points to the new feed *before* relying on the move.
+  - **Seats** — each human member of `smartcolibri` is a paid Team seat; for an open-source project, outside contributors work through forks and need no seat. Outside collaborators on the repo are the option for occasional maintainers.
 
 ### 2.3 Exception to the local-docs rule
 
@@ -47,6 +49,10 @@ GitHub-hosted runners, macOS included, are **free for public repositories**, so 
 - **GitHub-hosted macOS runner** — recommended: zero maintenance, no cost; keep the job lean (`xcodegen generate` + one `xcodebuild` + tests), cache SwiftPM (Sparkle).
 - **Self-hosted runner on Vincent's Mac** — **never on a public repo**: any fork PR could run code on it.
 - Prerequisite: fix the `xcodebuild test` exit code (the host app that does not terminate) so CI reports real failures and real passes.
+
+### 2.5 Sparkle feed after the transfer
+
+Every installed copy fetches its updates from `raw.githubusercontent.com/vincentlauriat/MacInside/...`, which works only through GitHub's transfer redirect. The redirect breaks for good if a repository named `MacInside` is ever created again under `vincentlauriat`. Ship a release whose `SUFeedURL` points to `smartcolibri/MacInside` (or to the Pages site), and never recreate the old repo name.
 
 ## 3. Mapping local files to GitHub
 
@@ -82,12 +88,13 @@ GitHub-hosted runners, macOS included, are **free for public repositories**, so 
 - Ruleset on `main` as in 2.1.
 - Wiki: already disabled; keep issues and projects on. Consider enabling Discussions for user questions.
 - Topics: current set is fine (`macos`, `menubar`, `system-monitor`, `sensors`, `hardware-monitoring`, `sparkle`, `swift`, `swiftui`); add `widgetkit`.
-- Set the repository website to the Pages URL (today: empty).
+- Set the repository website to the new Pages URL (today: empty).
+- Organization default: turn off "members can create public repositories" if repos are to be private by default.
 - Enable private vulnerability reporting and add a short `SECURITY.md` (the app is unsandboxed and can kill processes).
 
 ## 7. Proposed order
 
-0. **Switch to PRs now**, even solo: feature branch → PR → squash-merge, instead of local `--no-ff` merges pushed to `main`.
+0. **Fix the transfer fallout**: release with `SUFeedURL` on `smartcolibri/MacInside` (2.5), new Pages URL in the README, the `vincentlauriat.github.io` card and `lauriat.fr`. **Switch to PRs**, even solo: feature branch → PR → squash-merge, instead of local `--no-ff` merges pushed to `main` (PR #1 is the first).
 1. Make the decisions in section 2.
 2. Repo settings (section 6), labels, milestones, Projects board; convert `TODOS.md` items and the open `PLAN.md` phases into issues.
 3. `.github/` files (forms, PR template, `CODEOWNERS`, `dependabot.yml`), `AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, `Local.xcconfig.example`.
