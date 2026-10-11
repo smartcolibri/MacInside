@@ -7,7 +7,7 @@
 Real-time CPU, memory, storage, network, hardware sensors, GPU and battery — in a masonry dashboard window and a fully customizable menu bar.
 
 [![Platform](https://img.shields.io/badge/platform-macOS%2014%2B-blue.svg)](https://www.apple.com/macos)
-[![Release](https://img.shields.io/github/v/release/vincentlauriat/MacInside?color=brightgreen)](https://github.com/vincentlauriat/MacInside/releases/latest)
+[![Release](https://img.shields.io/github/v/release/smartcolibri/MacInside?color=brightgreen)](https://github.com/smartcolibri/MacInside/releases/latest)
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
 [![SwiftUI](https://img.shields.io/badge/SwiftUI-Observation-purple.svg)](https://developer.apple.com/swiftui)
 [![Languages](https://img.shields.io/badge/localized-FR%20%7C%20EN-blueviolet.svg)](#)
@@ -53,7 +53,7 @@ It talks directly to `host_statistics`, IOKit's `AppleSMC`, `IOAccelerator` and 
 
 ## Install
 
-Grab the latest pre-built `.dmg` from the [GitHub Releases page](https://github.com/vincentlauriat/MacInside/releases/latest), mount it, and drag `MacInside.app` to `/Applications`.
+Grab the latest pre-built `.dmg` from the [GitHub Releases page](https://github.com/smartcolibri/MacInside/releases/latest), mount it, and drag `MacInside.app` to `/Applications`.
 
 Releases are signed with an Apple Developer ID, built with the Hardened Runtime, and notarized + stapled by Apple — they launch by double-click without any Gatekeeper warning, even offline. **Sparkle** then takes over: every future release is offered automatically via *MacInside → Check for Updates…*, downloaded and installed only after you confirm.
 
