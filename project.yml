@@ -11,9 +11,15 @@ packages:
     url: https://github.com/sparkle-project/Sparkle
     from: "2.9.1"
 
+# Signature (DEVELOPMENT_TEAM) au niveau projet, hérité par tous les targets.
+configFiles:
+  Debug: Config/Signing.xcconfig
+  Release: Config/Signing.xcconfig
+
 settings:
   base:
-    DEVELOPMENT_TEAM: "KFLACS69T9"
+    # DEVELOPMENT_TEAM vit dans Config/Signing.xcconfig (surchargeable par un
+    # Local.xcconfig optionnel, ignoré par git) — jamais ici, sinon il gagne.
     ENABLE_HARDENED_RUNTIME: YES
     # Version partagée par l'app et l'extension widget : macOS attend qu'une
     # extension embarquée porte la même version que son app hôte. Définie ici
