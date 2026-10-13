@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>document.documentElement.classList.add('js')</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MacInside — the instrument panel macOS forgot to ship</title>
 <meta name="description" content="A native macOS system dashboard — CPU, memory, storage, network, real SMC sensors, GPU and battery, in a window and a fully customizable menu bar. Free, open-source, signed &amp; notarized, localized FR/EN, self-updating.">
@@ -10,304 +11,329 @@
 <meta property="og:image" content="https://smartcolibri.github.io/MacInside/screenshots/dashboard.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon-512.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="assets/base.css">
+<link rel="preload" href="assets/fonts/source-serif-4-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/sc.css">
 <style>
-  :root{
-    --accent:#f5a524;
-    --bg:#0a0c11; --bg2:#0d1016; --panel:#12151d; --panel2:#171b26; --line:#232838; --line2:#2c3346;
-    --txt:#eef1f7; --muted:#8d95a8; --faint:#565f75;
-    --orange:#ff9f0a; --blue:#0a84ff; --teal:#64d2ff; --mint:#63e6be; --purple:#bf5af2;
-    --maxw:1120px;
-    --mono:var(--font-mono);
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{background:
-      radial-gradient(1100px 520px at 82% -8%, rgba(255,159,10,.10), transparent 60%),
-      radial-gradient(900px 480px at 8% 4%, rgba(10,132,255,.12), transparent 60%),
-      var(--bg);
-    color:var(--txt);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
-  a{color:inherit;text-decoration:none}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
-  .mono{font-family:var(--mono)}
-  ::selection{background:rgba(10,132,255,.35)}
-  @media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important} }
+  /* ---------- Language switch (ported from base.css: hide-only rules) ---------- */
+  body:not(.lang-fr) .fr{display:none !important}
+  body:not(.lang-zh) .zh{display:none !important}
+  body.lang-fr .en,body.lang-zh .en{display:none !important}
+  body.lang-zh{font-family:var(--serif),"PingFang TC","Noto Serif TC","Noto Sans TC","Microsoft JhengHei",serif;line-break:strict;word-break:normal}
+  body.lang-zh .display{letter-spacing:normal}
+  body.lang-zh .display em{font-style:normal;color:var(--navy)}
+  body.lang-zh .hero h1{font-size:clamp(34px,4.6vw,60px)}
+  body.lang-zh .sec-head h2{font-size:clamp(26px,3.2vw,42px)}
 
-  /* ---------- nav ---------- */
-  nav{position:sticky;top:0;z-index:30;backdrop-filter:saturate(160%) blur(14px);background:rgba(10,12,17,.72);border-bottom:1px solid var(--line)}
-  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:750;letter-spacing:-.2px;font-size:15.5px}
-  .brand img{width:26px;height:26px;border-radius:7px;display:block}
-  .nav-links{display:flex;gap:26px;align-items:center;color:var(--muted);font-size:14px}
-  .nav-links a:hover{color:var(--txt)}
-  .nav-links .sep{width:1px;height:16px;background:var(--line2)}
-  @media (max-width:720px){ .nav-links a.hide-sm{display:none} }
+  b,strong{font-weight:500;color:var(--ink)}
+  .mono{font-family:var(--mono);font-variant-ligatures:none;font-size:.92em}
 
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 19px;border-radius:10px;font-weight:650;font-size:14.5px;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease}
-  .btn:hover{transform:translateY(-1px)}
-  .btn-primary{background:linear-gradient(135deg,var(--orange),#ffb648);color:#1a0f00;box-shadow:0 8px 24px rgba(255,159,10,.28)}
-  .btn-ghost{border:1px solid var(--line2);color:var(--txt);background:rgba(255,255,255,.02)}
-  .btn-ghost:hover{border-color:#3d4863;background:rgba(255,255,255,.04)}
-  .btn-sm{padding:8px 14px;font-size:13.5px;border-radius:8px}
+  /* ---------- Nav: language toggle ---------- */
+  .langtog{display:inline-flex;border:1px solid var(--line-strong);border-radius:var(--r);overflow:hidden}
+  .langtog button{background:transparent;border:0;color:var(--ink-mut);font:500 var(--fs-small)/1 var(--sans);padding:0 10px;min-height:36px;cursor:pointer;transition:color .25s,background .25s}
+  .langtog button+button{border-left:1px solid var(--line-strong)}
+  .langtog button:hover{color:var(--navy)}
+  .langtog button.on{background:var(--navy);color:var(--on-navy)}
 
-  /* ---------- hero ---------- */
-  header{padding:64px 0 40px}
-  .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:52px;align-items:center}
-  @media (max-width:940px){ .hero-grid{grid-template-columns:1fr;gap:40px} }
+  /* ---------- Hero ---------- */
+  .hero h1{font-size:clamp(44px,5.6vw,80px)}
+  .hero .hero-icon{width:72px;height:72px;margin-bottom:24px}
+  .hero .meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:28px}
+  .hero .meta b{font-weight:500;color:var(--ink)}
 
-  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--panel);color:var(--muted);padding:6px 13px 6px 10px;border-radius:999px;font-size:12.5px;margin-bottom:24px;font-family:var(--mono)}
-  .pill .led{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 8px var(--mint)}
-
-  h1{font-size:clamp(34px,4.6vw,52px);line-height:1.06;font-weight:820;letter-spacing:-1.4px}
-  h1 .grad{background:linear-gradient(120deg,var(--orange),var(--blue));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .sub{max-width:520px;margin:20px 0 0;font-size:clamp(15.5px,1.7vw,17.5px);color:var(--muted)}
-
-  .cta{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0 18px}
-  .meta{color:var(--faint);font-size:12.5px;font-family:var(--mono);display:flex;flex-wrap:wrap;gap:6px 16px}
-  .meta b{color:var(--muted);font-weight:600}
-
-  /* ---------- hero card: a live recreation of the CPU dashboard card ---------- */
-  .card-frame{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:0 40px 90px rgba(0,0,0,.5);overflow:hidden}
-  .card-chrome{display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line)}
-  .card-chrome i{width:10px;height:10px;border-radius:50%;display:block}
-  .card-chrome i:nth-child(1){background:#ff5f57}
-  .card-chrome i:nth-child(2){background:#febc2e}
-  .card-chrome i:nth-child(3){background:#28c840}
-  .card-chrome span{margin-left:8px;color:var(--faint);font-size:12px;font-family:var(--mono)}
-  .card-body{padding:22px}
-  .card-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px;margin-bottom:18px;color:var(--txt)}
-  .card-title .dot{width:7px;height:7px;border-radius:50%;background:var(--mint);animation:pulse 2.4s ease-in-out infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-
-  .gauge-row{display:flex;align-items:center;gap:20px}
-  .gauge{position:relative;width:104px;height:104px;flex:none}
+  /* Instrument plate: a live, paper-ink recreation of the CPU card */
+  .plate{border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(150px,.7fr) auto minmax(180px,1fr) 1.3fr;gap:clamp(24px,4vw,56px);align-items:center;padding:28px 4px}
+  .plate-id{font-family:var(--sans);font-size:var(--fs-small);color:var(--ink-faint);letter-spacing:.08em;text-transform:uppercase;line-height:1.8}
+  .plate-id strong{display:block;font-family:var(--serif);font-size:var(--fs-title);letter-spacing:0;text-transform:none;color:var(--ink);font-weight:500}
+  .gauge{position:relative;width:112px;height:112px}
   .gauge svg{width:100%;height:100%;transform:rotate(-90deg)}
-  .gauge circle{fill:none;stroke-width:11}
-  .gauge .track{stroke:rgba(255,255,255,.08)}
-  .gauge .seg-a{stroke:var(--orange);stroke-linecap:round;transition:stroke-dashoffset 1.1s cubic-bezier(.16,1,.3,1)}
-  .gauge .seg-b{stroke:var(--blue);stroke-linecap:round;transition:stroke-dashoffset 1.1s cubic-bezier(.16,1,.3,1)}
-  .gauge-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:19px}
+  .gauge circle{fill:none;stroke-width:9}
+  .gauge .track{stroke:var(--line)}
+  .gauge .seg-a{stroke:var(--navy);transition:stroke-dashoffset 1.1s var(--ease),stroke-dasharray 1.1s var(--ease)}
+  .gauge .seg-b{stroke:#8797b0;transition:stroke-dashoffset 1.1s var(--ease),stroke-dasharray 1.1s var(--ease)}
+  .gauge-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:24px;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
+  .legend{display:flex;flex-direction:column;font-family:var(--sans);font-size:var(--fs-label)}
+  .legend-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+  .legend-row:last-child{border-bottom:0}
+  .legend-row .sw{width:8px;height:8px;flex:none}
+  .legend-row .lbl{color:var(--ink-mut)}
+  .legend-row .num{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .core-bars{display:flex;align-items:flex-end;gap:4px;height:44px;border-bottom:1px solid var(--line-strong)}
+  .core-bars i{flex:1;background:var(--navy);transition:height .9s var(--ease)}
+  .core-bars i:nth-child(n+5){background:#8797b0}
+  .core-cap{font-family:var(--sans);font-size:var(--fs-small);color:var(--ink-faint);margin-top:8px;display:flex;justify-content:space-between}
 
-  .legend{display:flex;flex-direction:column;gap:9px;flex:1;min-width:0}
-  .legend-row{display:flex;align-items:center;gap:8px;font-size:13px}
-  .legend-row .sw{width:7px;height:7px;border-radius:50%;flex:none}
-  .legend-row .lbl{color:var(--muted)}
-  .legend-row .val{margin-left:auto;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  /* ---------- Section heads ---------- */
+  .sec-head .eyebrow{margin-bottom:14px}
+  .h-quote{font-size:clamp(26px,2.9vw,40px) !important;line-height:1.18}
+  .why-copy p{font-size:var(--fs-body);line-height:1.7;color:var(--ink-mut);max-width:38em}
+  .why-copy p.lead{font-size:var(--fs-lead);margin-bottom:18px}
 
-  .core-bars{display:flex;align-items:flex-end;gap:3px;height:34px;margin-top:20px}
-  .core-bars i{flex:1;border-radius:2px 2px 0 0;background:var(--blue);opacity:.85}
-  .core-bars i:nth-child(-n+4){background:var(--blue)}
-  .core-bars i:nth-child(n+5){background:var(--teal)}
+  /* Facts: ruled key/value pairs */
+  .facts{display:grid;grid-template-columns:repeat(2,1fr);column-gap:clamp(32px,5vw,72px);border-top:1px solid var(--line-strong)}
+  .fact{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:16px 4px;border-bottom:1px solid var(--line)}
+  .fact dt{font-family:var(--sans);font-size:var(--fs-label);color:var(--ink-mut);flex:none;max-width:45%}
+  .fact dd{font-family:var(--mono);font-size:13.5px;color:var(--ink);text-align:right;overflow-wrap:anywhere}
 
-  /* ---------- sections ---------- */
-  section{padding:74px 0}
-  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-bottom:12px}
-  h2{font-size:clamp(24px,3vw,32px);font-weight:780;letter-spacing:-.6px;max-width:640px}
-  .lede{color:var(--muted);max-width:600px;margin-top:14px;font-size:15.5px}
+  /* Feature rows: numbered by counter, API source as a small mono label */
+  .rows.feats{counter-reset:feat}
+  .rows.feats > li{counter-increment:feat}
+  .rows.feats .row-n{display:flex;gap:16px;align-items:baseline}
+  .rows.feats .row-n::before{content:counter(feat,decimal-leading-zero);font-family:var(--sans);font-size:var(--fs-small);color:var(--ink-faint);letter-spacing:.04em;min-width:1.6em}
+  .rows.feats h3{font:inherit;color:inherit}
+  .api{display:block;font-family:var(--mono);font-size:12px;color:var(--ink-faint);margin:6px 0 0 calc(1.6em + 16px);font-weight:400}
 
-  .why-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:52px;align-items:start;margin-top:40px}
-  @media (max-width:820px){ .why-grid{grid-template-columns:1fr} }
-  .why-grid p{color:var(--muted);font-size:15.5px;margin-bottom:16px;max-width:52ch}
-  .why-grid p b{color:var(--txt);font-weight:650}
-  .fact-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
-  .fact{display:flex;justify-content:space-between;gap:16px;padding:15px 18px;border-bottom:1px solid var(--line);font-size:13.5px}
-  .fact:last-child{border-bottom:none}
-  .fact .k{color:var(--muted)}
-  .fact .v{font-family:var(--mono);color:var(--txt);text-align:right}
+  /* Menu bar chips */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px}
+  .chip{font-family:var(--mono);font-size:12.5px;color:var(--ink);border:1px solid var(--line-strong);border-radius:var(--r);padding:7px 11px;background:var(--white);white-space:nowrap}
+  .split .lead{margin-top:24px}
+  .split h2{font-size:var(--fs-headline)}
 
-  /* ---------- feature grid ---------- */
-  .feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:40px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-  @media (max-width:900px){ .feat-grid{grid-template-columns:repeat(2,1fr)} }
-  @media (max-width:520px){ .feat-grid{grid-template-columns:1fr} }
-  .feat{background:var(--panel);padding:24px 22px}
-  .feat .fi{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--panel2);border:1px solid var(--line2)}
-  .feat .fi svg{width:17px;height:17px}
-  .feat .feyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;margin-bottom:6px}
-  .feat h3{font-size:15.5px;font-weight:700;margin-bottom:8px}
-  .feat p{color:var(--muted);font-size:13.5px;line-height:1.55}
+  .vals--2 .val-d{max-width:46ch}
 
-  /* ---------- screenshot ---------- */
-  .shot-frame{margin-top:40px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 50px 110px rgba(0,0,0,.55)}
-  .shot-frame img{display:block;width:100%;height:auto}
-
-  /* ---------- menu bar ---------- */
-  .menubar-demo{margin-top:36px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-wrap:wrap;gap:10px}
-  .mb-pill{display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:7px 13px;font-family:var(--mono);font-size:12.5px}
-  .mb-pill .sw{width:7px;height:7px;border-radius:50%}
-
-  .split{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center;margin-top:40px}
-  @media (max-width:860px){ .split{grid-template-columns:1fr} }
-  .split ul{display:flex;flex-direction:column;gap:14px}
-  .split li{display:flex;gap:12px;font-size:14.5px;color:var(--muted)}
-  .split li b{color:var(--txt);font-weight:650}
-  .split li .chk{flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px}
-
-  /* ---------- footer ---------- */
-  footer{border-top:1px solid var(--line);padding:40px 0 56px}
-  .foot-row{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center}
-  .foot-links{display:flex;gap:22px;flex-wrap:wrap;color:var(--muted);font-size:13.5px}
-  .foot-links a:hover{color:var(--txt)}
-  .foot-note{color:var(--faint);font-size:12.5px;margin-top:18px;font-family:var(--mono)}
-
-  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease, transform .6s ease}
-  .reveal.visible{opacity:1;transform:none}
-
-  .langtog{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex:none}
-  .langtog button{background:transparent;border:0;color:var(--muted);font:600 12.5px/1 var(--font-mono);
-    padding:0 10px;min-height:36px;cursor:pointer}
-  .langtog button+button{border-left:1px solid var(--line)}
-  .langtog button:hover{color:var(--txt)}
-  .langtog button.on{background:var(--accent);color:var(--on-accent)}
-  @media(max-width:600px){.langtog button{padding:0 7px;font-size:11.5px}}
+  @media (max-width:1024px){
+    .plate{grid-template-columns:auto 1fr;row-gap:28px}
+    .plate-id,.plate-bars{grid-column:1 / -1}
+  }
+  @media (max-width:768px){
+    .facts{grid-template-columns:1fr}
+    .ft-legal{text-align:center}
+  }
+  @media (max-width:480px){
+    .nav-logo-name{display:none}
+    .nav-links{gap:12px}
+    .nav-links .nav-cta{padding:9px 14px}
+    .langtog button{padding:0 8px}
+    .plate{grid-template-columns:1fr}
+    .gauge-wrap{display:flex;justify-content:center}
+    .fact{flex-direction:column;gap:4px}
+    .fact dt{max-width:none}
+    .fact dd{text-align:left}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .gauge .seg-a,.gauge .seg-b,.core-bars i{transition:none}
+  }
 </style>
 </head>
 <body>
-<a class="skip" href="#top"><span class="en">Skip to content</span><span class="fr">Aller au contenu</span><span class="zh">跳至內容</span></a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="colibri" fill="currentColor" stroke="none">
+      <path d="M47 41 C38 42 33 50 35 59 C37 68 45 74 56 79 C52 70 50 62 52 55 C55 47 53 41 47 41 Z" />
+      <path d="M47 42 L15 30 L46 46 Z" />
+      <path d="M50 49 C61 31 81 24 95 28 C83 39 67 48 55 56 Z" />
+      <path d="M55 76 L77 88 L60 72 Z" />
+      <path d="M54 77 L62 93 L57 74 Z" />
+      <circle cx="42" cy="45" r="1.5" style="fill: var(--mark-eye, #fff)" />
+    </g>
+  </defs>
+</svg>
 
-<nav><div class="wrap">
-  <a class="brand" href="#top"><img src="icon-512.png" alt=""><span>MacInside</span></a>
-  <div class="nav-links">
-    <a class="hide-sm" href="#features"><span class="en">Features</span><span class="fr">Fonctions</span><span class="zh">功能</span></a>
-    <a class="hide-sm" href="#menubar"><span class="en">Menu bar</span><span class="fr">Barre de menus</span><span class="zh">選單列</span></a>
-    <a class="hide-sm" href="#trust"><span class="en">Under the hood</span><span class="fr">Sous le capot</span><span class="zh">底層架構</span></a>
-    <div class="sep hide-sm"></div>
-    <a href="https://github.com/smartcolibri/MacInside" target="_blank" rel="noopener">GitHub ↗</a>
-    <div class="langtog" role="group" aria-label="Language / Langue / 語言">
-    <button type="button" data-lang="en" class="on" onclick="setLang('en')">EN</button>
-    <button type="button" data-lang="fr" onclick="setLang('fr')">FR</button>
-    <button type="button" data-lang="zh" onclick="setLang('zh')">中文</button>
-  </div>
-    <a class="btn btn-primary btn-sm" href="https://github.com/smartcolibri/MacInside/releases/latest" target="_blank" rel="noopener"><span class="en">Download</span><span class="fr">Télécharger</span><span class="zh">下載</span></a>
-  </div>
-</div></nav>
+<a class="skip-link" href="#main"><span class="en">Skip to content</span><span class="fr">Aller au contenu</span><span class="zh">跳至內容</span></a>
 
-<header id="top"><div class="wrap hero-grid">
-  <div>
-    <span class="pill"><span class="led"></span><span class="en">refreshes every 1s · reads AppleSMC directly</span><span class="fr">rafraîchi toutes les secondes · lit AppleSMC directement</span><span class="zh">每 1 秒更新 · 直接讀取 AppleSMC</span></span>
-    <h1><span class="en">The instrument panel<br><span class="grad">macOS forgot to ship.</span></span><span class="fr">La planche de bord<br><span class="grad">que macOS a oublié de livrer.</span></span><span class="zh">macOS 忘了附上的<span class="grad">那塊儀表板。</span></span></h1>
-    <p class="sub"><span class="en">CPU load, real sensor temperatures, fan RPM, GPU utilization, battery health, network throughput — one native dashboard, from the Dock to the menu bar.</span><span class="fr">Charge CPU, températures réelles des capteurs, RPM des ventilateurs, utilisation GPU, santé de la batterie, débit réseau — un tableau de bord natif, du Dock à la barre de menus.</span><span class="zh">CPU 負載、真實感測器溫度、風扇轉速、GPU 使用率、電池健康度、網路流量——一個原生儀表板，從 Dock 到選單列。</span></p>
-    <div class="cta">
-      <a class="btn btn-primary" href="https://github.com/smartcolibri/MacInside/releases/latest" target="_blank" rel="noopener"><span class="en">Download for macOS 14+</span><span class="fr">Télécharger pour macOS 14+</span><span class="zh">下載 macOS 14+ 版</span></a>
-      <a class="btn btn-ghost" href="https://github.com/smartcolibri/MacInside" target="_blank" rel="noopener"><span class="en">View source</span><span class="fr">Voir le code</span><span class="zh">檢視原始碼</span></a>
+<nav id="nav" class="site-nav" aria-label="Main navigation">
+  <div class="nav-left">
+    <a href="https://smartcolibri.github.io/" class="nav-logo" aria-label="Smart Colibri, all apps">
+      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#colibri" /></svg>
+      <span class="nav-logo-name">Smart Colibri</span>
+    </a>
+    <span class="nav-app hide-sm"><a href="#top">MacInside</a></span>
+  </div>
+  <ul class="nav-links">
+    <li class="hide-sm"><a href="#features"><span class="en">Features</span><span class="fr">Fonctions</span><span class="zh">功能</span></a></li>
+    <li class="hide-sm"><a href="#menubar"><span class="en">Menu bar</span><span class="fr">Barre de menus</span><span class="zh">選單列</span></a></li>
+    <li class="hide-sm"><a href="#trust"><span class="en">Under the hood</span><span class="fr">Sous le capot</span><span class="zh">底層架構</span></a></li>
+    <li>
+      <div class="langtog" role="group" aria-label="Language / Langue / 語言">
+        <button type="button" data-lang="en" class="on" onclick="setLang('en')">EN</button>
+        <button type="button" data-lang="fr" onclick="setLang('fr')">FR</button>
+        <button type="button" data-lang="zh" onclick="setLang('zh')">中文</button>
+      </div>
+    </li>
+    <li><a class="nav-cta" href="https://github.com/smartcolibri/MacInside/releases/latest" target="_blank" rel="noopener"><span class="en">Download</span><span class="fr">Télécharger</span><span class="zh">下載</span></a></li>
+  </ul>
+</nav>
+
+<main id="main" tabindex="-1">
+  <section id="top" class="hero">
+    <div class="hero-inner">
+      <div>
+        <img class="hero-icon fu" src="icon-512.png" alt="" width="72" height="72">
+        <span class="eyebrow fu"><span class="en">refreshes every 1s · reads AppleSMC directly</span><span class="fr">rafraîchi toutes les secondes · lit AppleSMC directement</span><span class="zh">每 1 秒更新 · 直接讀取 AppleSMC</span></span>
+        <h1 class="display fu d1"><span class="en">The instrument panel macOS forgot to <em>ship.</em></span><span class="fr">La planche de bord que macOS a oublié de <em>livrer.</em></span><span class="zh">macOS 忘了附上的<em>那塊儀表板。</em></span></h1>
+      </div>
+      <div>
+        <p class="hero-sub fu d1"><span class="en">CPU load, real sensor temperatures, fan RPM, GPU utilization, battery health, network throughput — one native dashboard, from the Dock to the menu bar.</span><span class="fr">Charge CPU, températures réelles des capteurs, RPM des ventilateurs, utilisation GPU, santé de la batterie, débit réseau — un tableau de bord natif, du Dock à la barre de menus.</span><span class="zh">CPU 負載、真實感測器溫度、風扇轉速、GPU 使用率、電池健康度、網路流量——一個原生儀表板，從 Dock 到選單列。</span></p>
+        <div class="actions fu d2">
+          <a class="btn-p" href="https://github.com/smartcolibri/MacInside/releases/latest" target="_blank" rel="noopener"><span class="en">Download for macOS 14+</span><span class="fr">Télécharger pour macOS 14+</span><span class="zh">下載 macOS 14+ 版</span></a>
+          <a class="btn-g" href="https://github.com/smartcolibri/MacInside" target="_blank" rel="noopener"><span class="en">View source</span><span class="fr">Voir le code</span><span class="zh">檢視原始碼</span> <span aria-hidden="true">→</span></a>
+        </div>
+        <p class="meta fu d2"><span><b>100%</b> <span class="en">native Swift</span><span class="fr">Swift natif</span><span class="zh">原生 Swift</span></span><span><b>0</b> <span class="en">telemetry</span><span class="fr">télémétrie</span><span class="zh">遙測</span></span><span><b>MIT</b> <span class="en">licensed</span><span class="fr">licence</span><span class="zh">授權</span></span><span><b>FR/EN</b> <span class="en">app localized</span><span class="fr">app localisée</span><span class="zh">應用程式語言</span></span></p>
+      </div>
     </div>
-    <div class="meta"><span><b>100%</b> <span class="en">native Swift</span><span class="fr">Swift natif</span><span class="zh">原生 Swift</span></span><span><b>0</b> <span class="en">telemetry</span><span class="fr">télémétrie</span><span class="zh">遙測</span></span><span><b>MIT</b> <span class="en">licensed</span><span class="fr">licence</span><span class="zh">授權</span></span><span><b>FR/EN</b> <span class="en">app localized</span><span class="fr">app localisée</span><span class="zh">應用程式語言</span></span></div>
-  </div>
 
-  <div class="card-frame" aria-hidden="true">
-    <div class="card-chrome"><i></i><i></i><i></i><span>Apple M4</span></div>
-    <div class="card-body">
-      <div class="card-title"><span class="dot"></span>CPU</div>
-      <div class="gauge-row">
-        <div class="gauge">
-          <svg viewBox="0 0 120 120">
-            <circle class="track" cx="60" cy="60" r="50"/>
-            <circle id="segA" class="seg-a" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"/>
-            <circle id="segB" class="seg-b" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"/>
-          </svg>
-          <div class="gauge-center" id="gaugeTotal">0%</div>
+    <div class="hero-media fu d2" aria-hidden="true">
+      <div class="plate">
+        <div class="plate-id">Apple M4<strong>CPU</strong></div>
+        <div class="gauge-wrap">
+          <div class="gauge">
+            <svg viewBox="0 0 120 120">
+              <circle class="track" cx="60" cy="60" r="50"/>
+              <circle id="segA" class="seg-a" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"/>
+              <circle id="segB" class="seg-b" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"/>
+            </svg>
+            <div class="gauge-center" id="gaugeTotal">0%</div>
+          </div>
         </div>
         <div class="legend">
-          <div class="legend-row"><span class="sw" style="background:var(--orange)"></span><span class="lbl"><span class="en">System</span><span class="fr">Système</span><span class="zh">系統</span></span><span class="val" id="valA">0%</span></div>
-          <div class="legend-row"><span class="sw" style="background:var(--blue)"></span><span class="lbl"><span class="en">User</span><span class="fr">Utilisateur</span><span class="zh">使用者</span></span><span class="val" id="valB">0%</span></div>
-          <div class="legend-row"><span class="sw" style="background:transparent"></span><span class="lbl"><span class="en">Threads</span><span class="fr">Threads</span><span class="zh">執行緒</span></span><span class="val mono">10</span></div>
+          <div class="legend-row"><span class="sw" style="background:var(--navy)"></span><span class="lbl"><span class="en">System</span><span class="fr">Système</span><span class="zh">系統</span></span><span class="num" id="valA">0%</span></div>
+          <div class="legend-row"><span class="sw" style="background:#8797b0"></span><span class="lbl"><span class="en">User</span><span class="fr">Utilisateur</span><span class="zh">使用者</span></span><span class="num" id="valB">0%</span></div>
+          <div class="legend-row"><span class="sw"></span><span class="lbl"><span class="en">Threads</span><span class="fr">Threads</span><span class="zh">執行緒</span></span><span class="num">10</span></div>
+        </div>
+        <div class="plate-bars">
+          <div class="core-bars" id="coreBars"></div>
+          <div class="core-cap"><span>P</span><span>E</span></div>
         </div>
       </div>
-      <div class="core-bars" id="coreBars"></div>
     </div>
-  </div>
-</div></header>
+  </section>
 
-<section id="why"><div class="wrap">
-  <div class="why-grid">
-    <div class="reveal">
-      <p class="eyebrow"><span class="en">Why</span><span class="fr">Pourquoi</span><span class="zh">為什麼</span></p>
-      <h2><span class="en">Activity Monitor shows you processes. System Settings shows battery health. <b>Neither shows a fan speed or an SMC temperature.</b></span><span class="fr">Le Moniteur d'activité montre les processus. Les Réglages Système montrent la santé de la batterie. <b>Ni l'un ni l'autre ne montre une vitesse de ventilateur ou une température SMC.</b></span><span class="zh">活動監視器給你行程，系統設定給你電池健康度。<b>兩者都不會告訴你風扇轉速或 SMC 溫度。</b></span></h2>
-      <p style="margin-top:22px"><span class="en">MacInside talks straight to <b>host_statistics</b>, IOKit's <b>AppleSMC</b>, <b>IOAccelerator</b> and <b>libproc</b> — the same low-level APIs tools like iStat Menus and Stats use. No shelling out to <span class="mono">top</span> or <span class="mono">iostat</span>, no background daemon, no phoning home.</span><span class="fr">MacInside s'adresse directement à <b>host_statistics</b>, à l'<b>AppleSMC</b> d'IOKit, à <b>IOAccelerator</b> et à <b>libproc</b> — les mêmes API bas niveau qu'utilisent iStat Menus ou Stats. Aucun appel à <span class="mono">top</span> ou <span class="mono">iostat</span>, aucun démon en arrière-plan, aucune remontée de données.</span><span class="zh">MacInside 直接與 <b>host_statistics</b>、IOKit 的 <b>AppleSMC</b>、<b>IOAccelerator</b> 與 <b>libproc</b> 溝通——就是 iStat Menus、Stats 這類工具所用的同一批低階 API。不呼叫 <span class="mono">top</span> 或 <span class="mono">iostat</span>，沒有背景常駐程式，也不回傳任何資料。</span></p>
-      <p><span class="en">Every reading lands in a single masonry dashboard window, and in a menu bar you shape yourself — one combined dropdown, or six independent icons, each with its own detail view.</span><span class="fr">Chaque relevé arrive dans une seule fenêtre en maçonnerie, et dans une barre de menus que vous façonnez — un menu combiné, ou six icônes indépendantes, chacune avec sa vue détaillée.</span><span class="zh">每一項讀數都落在同一個磚砌式儀表板視窗中，以及一條你自己決定形狀的選單列——一個合併下拉選單，或六個各自獨立、各有詳細檢視的圖示。</span></p>
+  <section id="why" class="sec sec-mist" aria-labelledby="why-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="rule-head fu" aria-hidden="true"></span>
+          <span class="eyebrow fu"><span class="en">Why</span><span class="fr">Pourquoi</span><span class="zh">為什麼</span></span>
+          <h2 id="why-title" class="display h-quote fu d1"><span class="en">Activity Monitor shows you processes. System Settings shows battery health. <em>Neither shows a fan speed or an SMC temperature.</em></span><span class="fr">Le Moniteur d'activité montre les processus. Les Réglages Système montrent la santé de la batterie. <em>Ni l'un ni l'autre ne montre une vitesse de ventilateur ou une température SMC.</em></span><span class="zh">活動監視器給你行程，系統設定給你電池健康度。<em>兩者都不會告訴你風扇轉速或 SMC 溫度。</em></span></h2>
+        </div>
+        <div class="why-copy fu d2">
+          <p class="lead"><span class="en">MacInside talks straight to <b>host_statistics</b>, IOKit's <b>AppleSMC</b>, <b>IOAccelerator</b> and <b>libproc</b> — the same low-level APIs tools like iStat Menus and Stats use. No shelling out to <span class="mono">top</span> or <span class="mono">iostat</span>, no background daemon, no phoning home.</span><span class="fr">MacInside s'adresse directement à <b>host_statistics</b>, à l'<b>AppleSMC</b> d'IOKit, à <b>IOAccelerator</b> et à <b>libproc</b> — les mêmes API bas niveau qu'utilisent iStat Menus ou Stats. Aucun appel à <span class="mono">top</span> ou <span class="mono">iostat</span>, aucun démon en arrière-plan, aucune remontée de données.</span><span class="zh">MacInside 直接與 <b>host_statistics</b>、IOKit 的 <b>AppleSMC</b>、<b>IOAccelerator</b> 與 <b>libproc</b> 溝通——就是 iStat Menus、Stats 這類工具所用的同一批低階 API。不呼叫 <span class="mono">top</span> 或 <span class="mono">iostat</span>，沒有背景常駐程式，也不回傳任何資料。</span></p>
+          <p><span class="en">Every reading lands in a single masonry dashboard window, and in a menu bar you shape yourself — one combined dropdown, or six independent icons, each with its own detail view.</span><span class="fr">Chaque relevé arrive dans une seule fenêtre en maçonnerie, et dans une barre de menus que vous façonnez — un menu combiné, ou six icônes indépendantes, chacune avec sa vue détaillée.</span><span class="zh">每一項讀數都落在同一個磚砌式儀表板視窗中，以及一條你自己決定形狀的選單列——一個合併下拉選單，或六個各自獨立、各有詳細檢視的圖示。</span></p>
+        </div>
+      </div>
+      <dl class="facts fu">
+        <div class="fact"><dt><span class="en">Refresh interval</span><span class="fr">Intervalle de rafraîchissement</span><span class="zh">更新間隔</span></dt><dd><span class="en">0.5s – 5s, adjustable</span><span class="fr">0,5 s – 5 s, réglable</span><span class="zh">0.5 秒 – 5 秒，可調整</span></dd></div>
+        <div class="fact"><dt><span class="en">Data source</span><span class="fr">Source des données</span><span class="zh">資料來源</span></dt><dd>IOKit / host_statistics / libproc</dd></div>
+        <div class="fact"><dt><span class="en">Network calls</span><span class="fr">Appels réseau</span><span class="zh">網路連線</span></dt><dd><span class="en">none, except optional public-IP lookup</span><span class="fr">aucun, hormis la recherche optionnelle d'IP publique</span><span class="zh">無，除了選用的公用 IP 查詢</span></dd></div>
+        <div class="fact"><dt><span class="en">Sandbox</span><span class="fr">Sandbox</span><span class="zh">沙箱</span></dt><dd><span class="en">disabled (SMC + process access)</span><span class="fr">désactivé (accès SMC et processus)</span><span class="zh">已停用（需存取 SMC 與行程）</span></dd></div>
+        <div class="fact"><dt><span class="en">Distribution</span><span class="fr">Distribution</span><span class="zh">發布方式</span></dt><dd><span class="en">Developer ID, notarized, stapled</span><span class="fr">Developer ID, notarié, stapled</span><span class="zh">Developer ID、已公證、已裝訂</span></dd></div>
+        <div class="fact"><dt><span class="en">License</span><span class="fr">Licence</span><span class="zh">授權</span></dt><dd><span class="en">MIT, source on GitHub</span><span class="fr">MIT, code sur GitHub</span><span class="zh">MIT，原始碼在 GitHub</span></dd></div>
+      </dl>
     </div>
-    <div class="fact-list reveal">
-      <div class="fact"><span class="k"><span class="en">Refresh interval</span><span class="fr">Intervalle de rafraîchissement</span><span class="zh">更新間隔</span></span><span class="v"><span class="en">0.5s – 5s, adjustable</span><span class="fr">0,5 s – 5 s, réglable</span><span class="zh">0.5 秒 – 5 秒，可調整</span></span></div>
-      <div class="fact"><span class="k"><span class="en">Data source</span><span class="fr">Source des données</span><span class="zh">資料來源</span></span><span class="v">IOKit / host_statistics / libproc</span></div>
-      <div class="fact"><span class="k"><span class="en">Network calls</span><span class="fr">Appels réseau</span><span class="zh">網路連線</span></span><span class="v"><span class="en">none, except optional public-IP lookup</span><span class="fr">aucun, hormis la recherche optionnelle d'IP publique</span><span class="zh">無，除了選用的公用 IP 查詢</span></span></div>
-      <div class="fact"><span class="k"><span class="en">Sandbox</span><span class="fr">Sandbox</span><span class="zh">沙箱</span></span><span class="v"><span class="en">disabled (SMC + process access)</span><span class="fr">désactivé (accès SMC et processus)</span><span class="zh">已停用（需存取 SMC 與行程）</span></span></div>
-      <div class="fact"><span class="k"><span class="en">Distribution</span><span class="fr">Distribution</span><span class="zh">發布方式</span></span><span class="v"><span class="en">Developer ID, notarized, stapled</span><span class="fr">Developer ID, notarié, stapled</span><span class="zh">Developer ID、已公證、已裝訂</span></span></div>
-      <div class="fact"><span class="k"><span class="en">License</span><span class="fr">Licence</span><span class="zh">授權</span></span><span class="v"><span class="en">MIT, source on GitHub</span><span class="fr">MIT, code sur GitHub</span><span class="zh">MIT，原始碼在 GitHub</span></span></div>
+  </section>
+
+  <section id="features" class="sec sec-light" aria-labelledby="features-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="rule-head fu" aria-hidden="true"></span>
+          <span class="eyebrow fu"><span class="en">What it reads</span><span class="fr">Ce qu'il lit</span><span class="zh">它讀些什麼</span></span>
+          <h2 id="features-title" class="display fu d1"><span class="en">Ten cards, one <em>machine.</em></span><span class="fr">Dix cartes, une <em>machine.</em></span><span class="zh">十張卡片，<em>一台機器。</em></span></h2>
+        </div>
+      </div>
+      <ul class="rows feats fu">
+        <li><div><h3 class="row-n">CPU</h3><span class="api">host_processor_info</span></div><p class="row-d"><span class="en">System vs. user load, per-core performance/efficiency bars, and the process actually spending your cycles.</span><span class="fr">Charge système contre charge utilisateur, barres performance/efficacité par cœur, et le processus qui consomme réellement vos cycles.</span><span class="zh">系統與使用者負載的對比、每個效能／節能核心的長條圖，以及真正在消耗你運算週期的行程。</span></p></li>
+        <li><div><h3 class="row-n"><span class="en">Memory</span><span class="fr">Mémoire</span><span class="zh">記憶體</span></h3><span class="api">vm_statistics64</span></div><p class="row-d"><span class="en">Wired, active, compressed, available — plus the top memory consumer, updated every second.</span><span class="fr">Résidente, active, compressée, disponible — plus le plus gros consommateur, mis à jour chaque seconde.</span><span class="zh">常駐、使用中、已壓縮、可用——外加最耗記憶體的行程，每秒更新。</span></p></li>
+        <li><div><h3 class="row-n"><span class="en">Storage</span><span class="fr">Stockage</span><span class="zh">儲存空間</span></h3><span class="api">FileManager / statfs</span></div><p class="row-d"><span class="en">System volume and every external volume, used and free, at a glance.</span><span class="fr">Volume système et chaque volume externe, utilisé et libre, d'un coup d'œil.</span><span class="zh">系統卷宗與每個外接卷宗的已用與可用空間，一眼看完。</span></p></li>
+        <li><div><h3 class="row-n"><span class="en">Network</span><span class="fr">Réseau</span><span class="zh">網路</span></h3><span class="api">getifaddrs</span></div><p class="row-d"><span class="en">Local and public IP, gateway, subnet, MAC address, and live download/upload sparklines.</span><span class="fr">IP locale et publique, passerelle, sous-réseau, adresse MAC, et sparklines de débit en direct.</span><span class="zh">本機與公用 IP、閘道、子網路、MAC 位址，以及即時上下行走勢圖。</span></p></li>
+        <li><div><h3 class="row-n"><span class="en">Sensors</span><span class="fr">Capteurs</span><span class="zh">感測器</span></h3><span class="api">IOKit · AppleSMC</span></div><p class="row-d"><span class="en">Real SMC temperature &amp; fan readings — Intel and Apple Silicon — with an honest "no fan on this Mac" for fanless models.</span><span class="fr">Relevés SMC réels de température et de ventilateurs — Intel et Apple Silicon — avec un honnête « pas de ventilateur sur ce Mac » pour les modèles fanless.</span><span class="zh">真實的 SMC 溫度與風扇讀數——Intel 與 Apple Silicon 皆支援——無風扇機型則老實顯示「這台 Mac 沒有風扇」。</span></p></li>
+        <li><div><h3 class="row-n"><span class="en">Power</span><span class="fr">Alimentation</span><span class="zh">電力</span></h3><span class="api">IOKit · AppleSMC</span></div><p class="row-d"><span class="en">Voltage, current and wattage on DC In, system and battery rails, where the hardware exposes them.</span><span class="fr">Tension, courant et puissance sur les rails DC In, système et batterie, là où le matériel les expose.</span><span class="zh">在硬體有提供的情況下，顯示 DC In、系統與電池電路的電壓、電流與瓦數。</span></p></li>
+        <li><div><h3 class="row-n">GPU</h3><span class="api">IOAccelerator</span></div><p class="row-d"><span class="en">Device, renderer and tiler utilization straight from IOAccelerator — no Console.app required.</span><span class="fr">Utilisation device, renderer et tiler directement depuis IOAccelerator — sans passer par Console.app.</span><span class="zh">直接從 IOAccelerator 取得 device、renderer 與 tiler 的使用率——不需要開 Console.app。</span></p></li>
+        <li><div><h3 class="row-n"><span class="en">Battery</span><span class="fr">Batterie</span><span class="zh">電池</span></h3><span class="api">IOPowerSources</span></div><p class="row-d"><span class="en">Charge, time remaining, health and cycle count — hidden automatically if your Mac doesn't have one.</span><span class="fr">Charge, autonomie restante, santé et nombre de cycles — masqué automatiquement si votre Mac n'en a pas.</span><span class="zh">電量、剩餘時間、健康度與循環次數——若你的 Mac 沒有電池則自動隱藏。</span></p></li>
+        <li><div><h3 class="row-n"><span class="en">Processes</span><span class="fr">Processus</span><span class="zh">行程</span></h3><span class="api">libproc · KERN_PROCARGS2</span></div><p class="row-d"><span class="en">A full process manager: sortable table, regex search, numeric filters, pinning, per-process disk I/O, parent/child navigation — and Terminate / Force Quit / Lower priority.</span><span class="fr">Un vrai gestionnaire de processus : table triable, recherche regex, filtres numériques, épinglage, E/S disque par processus, navigation parent/enfants — et Terminer / Forcer l'arrêt / Baisser la priorité.</span><span class="zh">完整的行程管理器：可排序表格、regex 搜尋、數值篩選、釘選、每個行程的磁碟 I/O、父子行程導覽——還能結束、強制結束或調降優先權。</span></p></li>
+        <li><div><h3 class="row-n"><span class="en">Widgets</span><span class="fr">Widgets</span><span class="zh">小工具</span></h3><span class="api">WidgetKit</span></div><p class="row-d"><span class="en">Ten native macOS widgets — Notification Center and desktop — mirroring every dashboard card, timestamped so you always know how fresh the data is.</span><span class="fr">Dix widgets macOS natifs — Centre de notifications et bureau — reflétant chaque carte du dashboard, horodatés pour toujours connaître la fraîcheur de la donnée.</span><span class="zh">十個原生 macOS 小工具——通知中心與桌面——對應儀表板的每張卡片，並附時間戳記，隨時知道資料有多新。</span></p></li>
+      </ul>
     </div>
-  </div>
-</div></section>
+  </section>
 
-<section id="features"><div class="wrap">
-  <p class="eyebrow reveal"><span class="en">What it reads</span><span class="fr">Ce qu'il lit</span><span class="zh">它讀些什麼</span></p>
-  <h2 class="reveal"><span class="en">Ten cards, one machine.</span><span class="fr">Dix cartes, une machine.</span><span class="zh">十張卡片，一台機器。</span></h2>
-  <div class="feat-grid reveal">
-    <div class="feat"><div class="fi" style="color:var(--orange)"><svg viewBox="0 0 24 24" fill="none"><rect x="7" y="7" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">host_processor_info</p><h3>CPU</h3><p><span class="en">System vs. user load, per-core performance/efficiency bars, and the process actually spending your cycles.</span><span class="fr">Charge système contre charge utilisateur, barres performance/efficacité par cœur, et le processus qui consomme réellement vos cycles.</span><span class="zh">系統與使用者負載的對比、每個效能／節能核心的長條圖，以及真正在消耗你運算週期的行程。</span></p></div>
-    <div class="feat"><div class="fi" style="color:var(--blue)"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 4v16M4 9h5M4 15h5" stroke="currentColor" stroke-width="1.6"/></svg></div><p class="feyebrow">vm_statistics64</p><h3><span class="en">Memory</span><span class="fr">Mémoire</span><span class="zh">記憶體</span></h3><p><span class="en">Wired, active, compressed, available — plus the top memory consumer, updated every second.</span><span class="fr">Résidente, active, compressée, disponible — plus le plus gros consommateur, mis à jour chaque seconde.</span><span class="zh">常駐、使用中、已壓縮、可用——外加最耗記憶體的行程，每秒更新。</span></p></div>
-    <div class="feat"><div class="fi" style="color:var(--purple)"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.6"/></svg></div><p class="feyebrow">FileManager / statfs</p><h3><span class="en">Storage</span><span class="fr">Stockage</span><span class="zh">儲存空間</span></h3><p><span class="en">System volume and every external volume, used and free, at a glance.</span><span class="fr">Volume système et chaque volume externe, utilisé et libre, d'un coup d'œil.</span><span class="zh">系統卷宗與每個外接卷宗的已用與可用空間，一眼看完。</span></p></div>
-    <div class="feat"><div class="fi" style="color:var(--teal)"><svg viewBox="0 0 24 24" fill="none"><path d="M4 17l4-8 4 5 3-4 5 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><p class="feyebrow">getifaddrs</p><h3><span class="en">Network</span><span class="fr">Réseau</span><span class="zh">網路</span></h3><p><span class="en">Local and public IP, gateway, subnet, MAC address, and live download/upload sparklines.</span><span class="fr">IP locale et publique, passerelle, sous-réseau, adresse MAC, et sparklines de débit en direct.</span><span class="zh">本機與公用 IP、閘道、子網路、MAC 位址，以及即時上下行走勢圖。</span></p></div>
-    <div class="feat"><div class="fi" style="color:var(--orange)"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v6M12 16v6M4.9 4.9l4.2 4.2M14.9 14.9l4.2 4.2M2 12h6M16 12h6M4.9 19.1l4.2-4.2M14.9 9.1l4.2-4.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">IOKit · AppleSMC</p><h3><span class="en">Sensors</span><span class="fr">Capteurs</span><span class="zh">感測器</span></h3><p><span class="en">Real SMC temperature &amp; fan readings — Intel and Apple Silicon — with an honest "no fan on this Mac" for fanless models.</span><span class="fr">Relevés SMC réels de température et de ventilateurs — Intel et Apple Silicon — avec un honnête « pas de ventilateur sur ce Mac » pour les modèles fanless.</span><span class="zh">真實的 SMC 溫度與風扇讀數——Intel 與 Apple Silicon 皆支援——無風扇機型則老實顯示「這台 Mac 沒有風扇」。</span></p></div>
-    <div class="feat"><div class="fi" style="color:var(--mint)"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div><p class="feyebrow">IOKit · AppleSMC</p><h3><span class="en">Power</span><span class="fr">Alimentation</span><span class="zh">電力</span></h3><p><span class="en">Voltage, current and wattage on DC In, system and battery rails, where the hardware exposes them.</span><span class="fr">Tension, courant et puissance sur les rails DC In, système et batterie, là où le matériel les expose.</span><span class="zh">在硬體有提供的情況下，顯示 DC In、系統與電池電路的電壓、電流與瓦數。</span></p></div>
-    <div class="feat"><div class="fi" style="color:var(--blue)"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 20h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">IOAccelerator</p><h3>GPU</h3><p><span class="en">Device, renderer and tiler utilization straight from IOAccelerator — no Console.app required.</span><span class="fr">Utilisation device, renderer et tiler directement depuis IOAccelerator — sans passer par Console.app.</span><span class="zh">直接從 IOAccelerator 取得 device、renderer 與 tiler 的使用率——不需要開 Console.app。</span></p></div>
-    <div class="feat"><div class="fi" style="color:var(--mint)"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="17" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M22 10.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><p class="feyebrow">IOPowerSources</p><h3><span class="en">Battery</span><span class="fr">Batterie</span><span class="zh">電池</span></h3><p><span class="en">Charge, time remaining, health and cycle count — hidden automatically if your Mac doesn't have one.</span><span class="fr">Charge, autonomie restante, santé et nombre de cycles — masqué automatiquement si votre Mac n'en a pas.</span><span class="zh">電量、剩餘時間、健康度與循環次數——若你的 Mac 沒有電池則自動隱藏。</span></p></div>
-    <div class="feat"><div class="fi" style="color:var(--purple)"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18M8 4v16" stroke="currentColor" stroke-width="1.6"/></svg></div><p class="feyebrow">libproc · KERN_PROCARGS2</p><h3><span class="en">Processes</span><span class="fr">Processus</span><span class="zh">行程</span></h3><p><span class="en">A full process manager: sortable table, regex search, numeric filters, pinning, per-process disk I/O, parent/child navigation — and Terminate / Force Quit / Lower priority.</span><span class="fr">Un vrai gestionnaire de processus : table triable, recherche regex, filtres numériques, épinglage, E/S disque par processus, navigation parent/enfants — et Terminer / Forcer l'arrêt / Baisser la priorité.</span><span class="zh">完整的行程管理器：可排序表格、regex 搜尋、數值篩選、釘選、每個行程的磁碟 I/O、父子行程導覽——還能結束、強制結束或調降優先權。</span></p></div>
-    <div class="feat"><div class="fi" style="color:var(--teal)"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="13" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="13" y="13" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg></div><p class="feyebrow">WidgetKit</p><h3><span class="en">Widgets</span><span class="fr">Widgets</span><span class="zh">小工具</span></h3><p><span class="en">Ten native macOS widgets — Notification Center and desktop — mirroring every dashboard card, timestamped so you always know how fresh the data is.</span><span class="fr">Dix widgets macOS natifs — Centre de notifications et bureau — reflétant chaque carte du dashboard, horodatés pour toujours connaître la fraîcheur de la donnée.</span><span class="zh">十個原生 macOS 小工具——通知中心與桌面——對應儀表板的每張卡片，並附時間戳記，隨時知道資料有多新。</span></p></div>
-  </div>
-</div></section>
+  <section id="dashboard" class="sec sec-mist" aria-labelledby="dashboard-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="rule-head fu" aria-hidden="true"></span>
+          <span class="eyebrow fu"><span class="en">The dashboard</span><span class="fr">Le tableau de bord</span><span class="zh">儀表板</span></span>
+          <h2 id="dashboard-title" class="display fu d1"><span class="en">Every card, one window, no scrolling to find what <em>broke.</em></span><span class="fr">Toutes les cartes, une fenêtre, sans faire défiler pour trouver ce qui <em>cloche.</em></span><span class="zh">所有卡片集中在一個視窗，不必捲動就能找到<em>出問題</em>的地方。</span></h2>
+        </div>
+        <p class="lead fu d2"><span class="en">A masonry layout that adapts to your window width — drag any card to reorder it, the layout is remembered next time you launch.</span><span class="fr">Une mise en page en maçonnerie qui s'adapte à la largeur de la fenêtre — glissez une carte pour la réordonner, la disposition est retenue au prochain lancement.</span><span class="zh">磚砌式版面會依視窗寬度自動調整——拖曳任一張卡片即可重新排序，下次啟動時會記住這個版面。</span></p>
+      </div>
+      <figure class="figure fu"><img src="screenshots/dashboard.png" alt="MacInside dashboard window showing CPU, memory, storage, network, sensors, power, battery and network identity cards" loading="lazy"></figure>
+    </div>
+  </section>
 
-<section id="dashboard"><div class="wrap">
-  <p class="eyebrow reveal"><span class="en">The dashboard</span><span class="fr">Le tableau de bord</span><span class="zh">儀表板</span></p>
-  <h2 class="reveal"><span class="en">Every card, one window, no scrolling to find what broke.</span><span class="fr">Toutes les cartes, une fenêtre, sans faire défiler pour trouver ce qui cloche.</span><span class="zh">所有卡片集中在一個視窗，不必捲動就能找到出問題的地方。</span></h2>
-  <p class="lede reveal"><span class="en">A masonry layout that adapts to your window width — drag any card to reorder it, the layout is remembered next time you launch.</span><span class="fr">Une mise en page en maçonnerie qui s'adapte à la largeur de la fenêtre — glissez une carte pour la réordonner, la disposition est retenue au prochain lancement.</span><span class="zh">磚砌式版面會依視窗寬度自動調整——拖曳任一張卡片即可重新排序，下次啟動時會記住這個版面。</span></p>
-  <div class="shot-frame reveal"><img src="screenshots/dashboard.png" alt="MacInside dashboard window showing CPU, memory, storage, network, sensors, power, battery and network identity cards" loading="lazy"></div>
-</div></section>
-
-<section id="menubar"><div class="wrap">
-  <div class="split">
-    <div class="reveal">
-      <p class="eyebrow"><span class="en">Menu bar</span><span class="fr">Barre de menus</span><span class="zh">選單列</span></p>
-      <h2><span class="en">Lives in your menu bar, however much room you give it.</span><span class="fr">Vit dans votre barre de menus, quelle que soit la place que vous lui laissez.</span><span class="zh">住在你的選單列裡，不管你留給它多少空間。</span></h2>
-      <p class="lede"><span class="en">One combined dropdown for a quick glance, or six independent icons — CPU, Memory, Network, Disk, Battery, GPU — each opening its own detailed view. Toggle per metric from Settings.</span><span class="fr">Un menu combiné pour un coup d'œil rapide, ou six icônes indépendantes — CPU, Mémoire, Réseau, Disque, Batterie, GPU — chacune ouvrant sa vue détaillée. Activable métrique par métrique dans les Réglages.</span><span class="zh">想快速一瞥就用一個合併下拉選單，或改用六個獨立圖示——CPU、記憶體、網路、磁碟、電池、GPU——每個都能開啟自己的詳細檢視。可在設定中逐項開關。</span></p>
-      <div class="menubar-demo">
-        <span class="mb-pill"><span class="sw" style="background:var(--orange)"></span>CPU 34%</span>
-        <span class="mb-pill"><span class="sw" style="background:var(--blue)"></span>MEM 71%</span>
-        <span class="mb-pill"><span class="sw" style="background:var(--teal)"></span>NET ↓52MB/s</span>
-        <span class="mb-pill"><span class="sw" style="background:var(--purple)"></span>DISK 79%</span>
-        <span class="mb-pill"><span class="sw" style="background:var(--mint)"></span>BATT 86%</span>
-        <span class="mb-pill"><span class="sw" style="background:var(--orange)"></span>GPU 12%</span>
+  <section id="menubar" class="sec sec-light" aria-labelledby="menubar-title">
+    <div class="wrap">
+      <div class="split">
+        <div>
+          <span class="rule-head fu" aria-hidden="true"></span>
+          <span class="eyebrow fu"><span class="en">Menu bar</span><span class="fr">Barre de menus</span><span class="zh">選單列</span></span>
+          <h2 id="menubar-title" class="display fu d1"><span class="en">Lives in your menu bar, however much <em>room</em> you give it.</span><span class="fr">Vit dans votre barre de menus, quelle que soit la <em>place</em> que vous lui laissez.</span><span class="zh">住在你的<em>選單列</em>裡，不管你留給它多少空間。</span></h2>
+          <p class="lead fu d2"><span class="en">One combined dropdown for a quick glance, or six independent icons — CPU, Memory, Network, Disk, Battery, GPU — each opening its own detailed view. Toggle per metric from Settings.</span><span class="fr">Un menu combiné pour un coup d'œil rapide, ou six icônes indépendantes — CPU, Mémoire, Réseau, Disque, Batterie, GPU — chacune ouvrant sa vue détaillée. Activable métrique par métrique dans les Réglages.</span><span class="zh">想快速一瞥就用一個合併下拉選單，或改用六個獨立圖示——CPU、記憶體、網路、磁碟、電池、GPU——每個都能開啟自己的詳細檢視。可在設定中逐項開關。</span></p>
+          <div class="chips fu d2">
+            <span class="chip">CPU 34%</span>
+            <span class="chip">MEM 71%</span>
+            <span class="chip">NET ↓52MB/s</span>
+            <span class="chip">DISK 79%</span>
+            <span class="chip">BATT 86%</span>
+            <span class="chip">GPU 12%</span>
+          </div>
+        </div>
+        <figure class="figure fu d1"><img src="screenshots/settings.png" alt="MacInside Settings window: appearance, refresh interval, and menu bar mode" loading="lazy"></figure>
       </div>
     </div>
-    <div class="shot-frame reveal"><img src="screenshots/settings.png" alt="MacInside Settings window: appearance, refresh interval, and menu bar mode" loading="lazy"></div>
-  </div>
-</div></section>
+  </section>
 
-<section id="trust"><div class="wrap">
-  <p class="eyebrow reveal"><span class="en">Under the hood</span><span class="fr">Sous le capot</span><span class="zh">底層架構</span></p>
-  <h2 class="reveal"><span class="en">Built the way a system tool should be.</span><span class="fr">Construit comme un outil système devrait l'être.</span><span class="zh">以系統工具該有的方式打造。</span></h2>
-  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px 40px;margin-top:36px" class="reveal">
-    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><span class="en"><b style="color:var(--txt);font-weight:650">Signed &amp; notarized.</b> Developer ID + Hardened Runtime, stapled by Apple — launches without a Gatekeeper warning, even offline.</span><span class="fr"><b style="color:var(--txt);font-weight:650">Signée et notariée.</b> Developer ID + Hardened Runtime, stapled par Apple — se lance sans avertissement Gatekeeper, même hors ligne.</span><span class="zh"><b style="color:var(--txt);font-weight:650">已簽章與公證。</b>Developer ID + Hardened Runtime，並由 Apple 裝訂——即使離線也不會出現 Gatekeeper 警告。</span></span></div>
-    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><span class="en"><b style="color:var(--txt);font-weight:650">Self-updating.</b> Sparkle checks in the background and asks before it ever downloads or installs anything.</span><span class="fr"><b style="color:var(--txt);font-weight:650">Auto-mise à jour.</b> Sparkle vérifie en arrière-plan et demande toujours avant de télécharger ou d'installer quoi que ce soit.</span><span class="zh"><b style="color:var(--txt);font-weight:650">自動更新。</b>Sparkle 會在背景檢查，並且在下載或安裝任何東西之前都會先詢問你。</span></span></div>
-    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><span class="en"><b style="color:var(--txt);font-weight:650">Speaks your language.</b> Follows the system language automatically — French or English today.</span><span class="fr"><b style="color:var(--txt);font-weight:650">Parle votre langue.</b> Suit automatiquement la langue du système — français ou anglais aujourd'hui.</span><span class="zh"><b style="color:var(--txt);font-weight:650">說你的語言。</b>自動跟隨系統語言——目前支援法文與英文。</span></span></div>
-    <div style="display:flex;gap:12px;font-size:14.5px;color:var(--muted)"><span class="chk" style="flex:none;width:18px;height:18px;border-radius:5px;background:rgba(99,230,190,.14);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px">✓</span><span><span class="en"><b style="color:var(--txt);font-weight:650">Open source.</b> MIT licensed — read every line, or build it yourself with XcodeGen.</span><span class="fr"><b style="color:var(--txt);font-weight:650">Open source.</b> Sous licence MIT — lisez chaque ligne, ou compilez-la vous-même avec XcodeGen.</span><span class="zh"><b style="color:var(--txt);font-weight:650">開源。</b>採 MIT 授權——你可以讀每一行程式碼，也可以自己用 XcodeGen 建置。</span></span></div>
-  </div>
-</div></section>
-
-<footer><div class="wrap">
-  <div class="foot-row">
-    <a class="brand" href="#top"><img src="icon-512.png" alt=""><span>MacInside</span></a>
-    <div class="foot-links">
-      <a href="https://github.com/smartcolibri/MacInside" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://github.com/smartcolibri/MacInside/releases/latest" target="_blank" rel="noopener"><span class="en">Releases</span><span class="fr">Versions</span><span class="zh">發行版</span></a>
-      <a href="https://github.com/smartcolibri/MacInside/blob/main/LICENSE" target="_blank" rel="noopener"><span class="en">MIT License</span><span class="fr">Licence MIT</span><span class="zh">MIT 授權</span></a>
-      <a href="https://lauriat.fr" target="_blank" rel="noopener">lauriat.fr</a>
-      <a href="https://vincentlauriat.github.io" target="_blank" rel="noopener"><span class="en">More apps</span><span class="fr">Autres apps</span><span class="zh">其他應用程式</span></a>
+  <section id="trust" class="sec sec-mist" aria-labelledby="trust-title">
+    <div class="wrap">
+      <div class="sec-head sec-head--solo">
+        <div>
+          <span class="rule-head fu" aria-hidden="true"></span>
+          <span class="eyebrow fu"><span class="en">Under the hood</span><span class="fr">Sous le capot</span><span class="zh">底層架構</span></span>
+          <h2 id="trust-title" class="display fu d1"><span class="en">Built the way a system tool <em>should</em> be.</span><span class="fr">Construit comme un outil système <em>devrait</em> l'être.</span><span class="zh">以系統工具<em>該有</em>的方式打造。</span></h2>
+        </div>
+      </div>
+      <div class="vals vals--2">
+        <div class="val fu">
+          <h3 class="val-n"><span class="en">Signed &amp; notarized.</span><span class="fr">Signée et notariée.</span><span class="zh">已簽章與公證。</span></h3>
+          <p class="val-d"><span class="en">Developer ID + Hardened Runtime, stapled by Apple — launches without a Gatekeeper warning, even offline.</span><span class="fr">Developer ID + Hardened Runtime, stapled par Apple — se lance sans avertissement Gatekeeper, même hors ligne.</span><span class="zh">Developer ID + Hardened Runtime，並由 Apple 裝訂——即使離線也不會出現 Gatekeeper 警告。</span></p>
+        </div>
+        <div class="val fu d1">
+          <h3 class="val-n"><span class="en">Self-updating.</span><span class="fr">Auto-mise à jour.</span><span class="zh">自動更新。</span></h3>
+          <p class="val-d"><span class="en">Sparkle checks in the background and asks before it ever downloads or installs anything.</span><span class="fr">Sparkle vérifie en arrière-plan et demande toujours avant de télécharger ou d'installer quoi que ce soit.</span><span class="zh">Sparkle 會在背景檢查，並且在下載或安裝任何東西之前都會先詢問你。</span></p>
+        </div>
+        <div class="val fu">
+          <h3 class="val-n"><span class="en">Speaks your language.</span><span class="fr">Parle votre langue.</span><span class="zh">說你的語言。</span></h3>
+          <p class="val-d"><span class="en">Follows the system language automatically — French or English today.</span><span class="fr">Suit automatiquement la langue du système — français ou anglais aujourd'hui.</span><span class="zh">自動跟隨系統語言——目前支援法文與英文。</span></p>
+        </div>
+        <div class="val fu d1">
+          <h3 class="val-n"><span class="en">Open source.</span><span class="fr">Open source.</span><span class="zh">開源。</span></h3>
+          <p class="val-d"><span class="en">MIT licensed — read every line, or build it yourself with XcodeGen.</span><span class="fr">Sous licence MIT — lisez chaque ligne, ou compilez-la vous-même avec XcodeGen.</span><span class="zh">採 MIT 授權——你可以讀每一行程式碼，也可以自己用 XcodeGen 建置。</span></p>
+        </div>
+      </div>
     </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="ft-in">
+    <a href="https://smartcolibri.github.io/" class="ft-logo">
+      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#colibri" /></svg>
+      <span class="ft-name">Smart Colibri</span>
+    </a>
+    <ul class="ft-nav">
+      <li><a href="https://smartcolibri.github.io/"><span class="en">All apps</span><span class="fr">Toutes les apps</span><span class="zh">所有應用程式</span></a></li>
+      <li><a href="https://github.com/smartcolibri/MacInside" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="https://github.com/smartcolibri/MacInside/releases/latest" target="_blank" rel="noopener"><span class="en">Releases</span><span class="fr">Versions</span><span class="zh">發行版</span></a></li>
+      <li><a href="https://github.com/smartcolibri/MacInside/blob/main/LICENSE" target="_blank" rel="noopener"><span class="en">MIT License</span><span class="fr">Licence MIT</span><span class="zh">MIT 授權</span></a></li>
+      <li><a href="https://lauriat.fr" target="_blank" rel="noopener">lauriat.fr</a></li>
+      <li><a href="https://vincentlauriat.github.io" target="_blank" rel="noopener"><span class="en">More apps</span><span class="fr">Autres apps</span><span class="zh">其他應用程式</span></a></li>
+    </ul>
   </div>
-  <p class="foot-note"><span class="en">Built by Vincent Lauriat · one of several free, open-source macOS apps</span><span class="fr">Réalisé par Vincent Lauriat · l'une de plusieurs apps macOS libres et open source</span><span class="zh">由 Vincent Lauriat 製作 · 多款免費開源 macOS 應用程式之一</span></p>
-</div></footer>
+  <div class="ft-in ft-legal">
+    <p class="ft-copy">© 2026 Smart Colibri. MacInside. <span class="en">Built by Vincent Lauriat · one of several free, open-source macOS apps</span><span class="fr">Réalisé par Vincent Lauriat · l'une de plusieurs apps macOS libres et open source</span><span class="zh">由 Vincent Lauriat 製作 · 多款免費開源 macOS 應用程式之一</span></p>
+    <p class="ft-copy"><a href="https://www.smartcolibri.fr/mentions-legales.html"><span class="en">Legal notice</span><span class="fr">Mentions légales</span><span class="zh">法律聲明</span></a> · <a href="mailto:contact@smartcolibri.fr">contact@smartcolibri.fr</a></p>
+  </div>
+</footer>
 
 <script>
   // Hero gauge: sweep in once on load, then a gentle live-looking wobble.
@@ -333,7 +359,7 @@
       total.textContent = Math.round(a+b) + '%';
       var bars = coreBars.children;
       for (var i=0;i<bars.length;i++){
-        var h = 18 + Math.round(Math.random()*16);
+        var h = 18 + Math.round(Math.random()*24);
         bars[i].style.height = h + 'px';
       }
     }
@@ -348,11 +374,21 @@
         paint(a, b);
       }, 2200);
     }
+  })();
 
+  // Shell: reveal on scroll + nav hairline once scrolled.
+  (function(){
+    var els = document.querySelectorAll('.fu');
+    if (!('IntersectionObserver' in window)) { els.forEach(function(el){ el.classList.add('v'); }); return; }
     var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, {threshold:.12});
-    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+      entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('v'); io.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+    els.forEach(function(el){ io.observe(el); });
+
+    var nav = document.getElementById('nav');
+    var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 12); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
   })();
 </script>
 
