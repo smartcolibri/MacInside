@@ -5,9 +5,9 @@
 <script>document.documentElement.classList.add('js')</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MacInside — the instrument panel macOS forgot to ship</title>
-<meta name="description" content="A native macOS system dashboard — CPU, memory, storage, network, real SMC sensors, GPU and battery, in a window and a fully customizable menu bar. Free, open-source, signed &amp; notarized, localized FR/EN, self-updating.">
-<meta property="og:title" content="MacInside">
-<meta property="og:description" content="The instrument panel macOS forgot to ship — CPU, memory, sensors, GPU and battery, refreshed every second.">
+<meta name="description" data-i18n="desc" content="A native macOS system dashboard — CPU, memory, storage, network, real SMC sensors, GPU and battery, in a window and a fully customizable menu bar. Free, open-source, signed &amp; notarized, localized FR/EN, self-updating.">
+<meta property="og:title" data-i18n="title" content="MacInside">
+<meta property="og:description" data-i18n="ogd" content="The instrument panel macOS forgot to ship — CPU, memory, sensors, GPU and battery, refreshed every second.">
 <meta property="og:image" content="https://smartcolibri.github.io/MacInside/screenshots/dashboard.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -132,9 +132,9 @@
 
 <a class="skip-link" href="#main"><span class="en">Skip to content</span><span class="fr">Aller au contenu</span><span class="zh">跳至內容</span></a>
 
-<nav id="nav" class="site-nav" aria-label="Main navigation">
+<nav id="nav" class="site-nav" aria-label="Main navigation / Navigation principale / 主導覽">
   <div class="nav-left">
-    <a href="https://smartcolibri.github.io/" class="nav-logo" aria-label="Smart Colibri, all apps">
+    <a href="https://smartcolibri.github.io/" class="nav-logo" aria-label="Smart Colibri, all apps / toutes les apps / 所有應用程式">
       <svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#colibri" /></svg>
       <span class="nav-logo-name">Smart Colibri</span>
     </a>
@@ -257,7 +257,7 @@
         </div>
         <p class="lead fu d2"><span class="en">A masonry layout that adapts to your window width — drag any card to reorder it, the layout is remembered next time you launch.</span><span class="fr">Une mise en page en maçonnerie qui s'adapte à la largeur de la fenêtre — glissez une carte pour la réordonner, la disposition est retenue au prochain lancement.</span><span class="zh">磚砌式版面會依視窗寬度自動調整——拖曳任一張卡片即可重新排序，下次啟動時會記住這個版面。</span></p>
       </div>
-      <figure class="figure fu"><img src="screenshots/dashboard.png" alt="MacInside dashboard window showing CPU, memory, storage, network, sensors, power, battery and network identity cards" loading="lazy"></figure>
+      <figure class="figure fu"><img src="screenshots/dashboard.png" alt="MacInside dashboard window showing CPU, memory, storage, network, sensors, power, battery and network identity cards" data-alt-fr="Fenêtre du tableau de bord MacInside avec les cartes CPU, mémoire, stockage, réseau, capteurs, alimentation, batterie et identité réseau" data-alt-zh="MacInside 儀表板視窗，顯示 CPU、記憶體、儲存空間、網路、感測器、電源、電池與網路身分資訊卡片" loading="lazy"></figure>
     </div>
   </section>
 
@@ -278,7 +278,7 @@
             <span class="chip">GPU 12%</span>
           </div>
         </div>
-        <figure class="figure fu d1"><img src="screenshots/settings.png" alt="MacInside Settings window: appearance, refresh interval, and menu bar mode" loading="lazy"></figure>
+        <figure class="figure fu d1"><img src="screenshots/settings.png" alt="MacInside Settings window: appearance, refresh interval, and menu bar mode" data-alt-fr="Fenêtre Réglages de MacInside : apparence, intervalle d'actualisation et mode de la barre des menus" data-alt-zh="MacInside 設定視窗：外觀、更新間隔與選單列模式" loading="lazy"></figure>
       </div>
     </div>
   </section>
@@ -397,6 +397,7 @@
      simple `zh` laisse le navigateur choisir une fonte Han simplifiée, qui
      rend certains caractères traditionnels dans la mauvaise forme. */
   var LANG_TAG={en:'en',fr:'fr',zh:'zh-Hant'};
+  var PAGE_META={"title": {"en": "MacInside — the instrument panel macOS forgot to ship", "fr": "MacInside — le tableau de bord que macOS a oublié de livrer", "zh": "MacInside — macOS 忘了附上的儀表板"}, "desc": {"en": "A native macOS system dashboard — CPU, memory, storage, network, real SMC sensors, GPU and battery, in a window and a fully customizable menu bar. Free, open-source, signed & notarized, localized FR/EN, self-updating.", "fr": "Un tableau de bord système natif pour macOS : CPU, mémoire, stockage, réseau, vrais capteurs SMC, GPU et batterie, dans une fenêtre et une barre des menus entièrement personnalisable. Gratuit, open source, signé et notarisé, localisé FR/EN, mise à jour automatique.", "zh": "原生 macOS 系統儀表板：CPU、記憶體、儲存空間、網路、真實 SMC 感測器、GPU 與電池，呈現於視窗與可完全自訂的選單列。免費、開源、已簽署並經公證，介面支援法文與英文，可自動更新。"}, "ogd": {"en": "The instrument panel macOS forgot to ship — CPU, memory, sensors, GPU and battery, refreshed every second.", "fr": "Le tableau de bord que macOS a oublié de livrer : CPU, mémoire, capteurs, GPU et batterie, actualisés chaque seconde.", "zh": "macOS 忘了附上的儀表板：CPU、記憶體、感測器、GPU 與電池，每秒更新。"}};
   function setLang(l){
     if(!LANG_TAG[l]) l='en';
     document.body.classList.remove('lang-en','lang-fr','lang-zh');
@@ -409,6 +410,15 @@
       b.classList.toggle('on',on);
       b.setAttribute('aria-pressed',on?'true':'false');
     });
+    document.querySelectorAll('img[data-alt-fr]').forEach(function(img){
+      if(!img.dataset.altEn) img.dataset.altEn=img.getAttribute('alt');
+      img.setAttribute('alt',(l==='fr'?img.dataset.altFr:l==='zh'?img.dataset.altZh:img.dataset.altEn)||img.dataset.altEn);
+    });
+    document.title=PAGE_META.title[l];
+    document.querySelectorAll('meta[data-i18n]').forEach(function(m){
+      var v=PAGE_META[m.dataset.i18n==='desc'?'desc':m.dataset.i18n==='ogd'?'ogd':'title'][l];
+      m.setAttribute('content',v);
+    });
     try{localStorage.setItem('vl-lang',l)}catch(e){}
   }
   (function(){
@@ -417,7 +427,7 @@
     /* Le traditionnel est servi a tout visiteur sinophone, y compris zh-CN :
        c'est la seule variante chinoise disponible, et la renvoyer vaut mieux
        que de rabattre ce visiteur sur l'anglais. */
-    setLang(saved||(n==='zh'?'zh':(n==='fr'?'fr':'en')));
+    setLang(LANG_TAG[saved]?saved:(n==='zh'?'zh':(n==='fr'?'fr':'en')));
   })();
 </script>
 </body>
